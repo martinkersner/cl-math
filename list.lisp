@@ -19,6 +19,10 @@
 (defun iota (n &optional (start-at 0))
   (if (<= n 0) nil (cons start-at (iota (- n 1) (+ start-at 1)))))
 
+(push 'iota-range *list-namespace*)
+(defun iota-range (from to)
+  (iota (- (1+ to) from) from))
+
 ;;; Return the last element of given list.
 (push 'last-elem *list-namespace*)
 (defun last-elem (lst)

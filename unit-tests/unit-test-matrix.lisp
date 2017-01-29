@@ -161,20 +161,20 @@
   ;; []
   (push '[] *matrix-namespace-unit-test*)
   (check
-    ;(compare-matrix ([] 0 0 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((1))))
-    (compare-matrix ([] 0 1 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((1)(2))))
-    (compare-matrix ([] 0 2 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((1)(2)(3))))
-    (compare-matrix ([] 1 2 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((2)(3))))
-    (compare-matrix ([] 0 0 (matrix-from-data '((1 1)(2 2)(3 3)))) (matrix-from-data '((1 1))))
-    (compare-matrix ([] 0 1 (matrix-from-data '((1 1)(2 2)(3 3)))) (matrix-from-data '((1 1)(2 2))))
-    (compare-matrix ([] 0 2 (matrix-from-data '((1 1)(2 2)(3 3)))) (matrix-from-data '((1 1)(2 2)(3 3))))
-    (compare-matrix ([] 1 2 (matrix-from-data '((1 1)(2 2)(3 3)))) (matrix-from-data '((2 2)(3 3))))
+    (equal ([] (matrix-from-data '((1)(2)(3))) :row '(0 0)) 1)
+    (compare-matrix ([] (matrix-from-data '((1)(2)(3))) :row '(0 1)) (matrix-from-data '((1)(2))))
+    (compare-matrix ([] (matrix-from-data '((1)(2)(3))) :row '(0 2)) (matrix-from-data '((1)(2)(3))))
+    (compare-matrix ([] (matrix-from-data '((1)(2)(3))) :row '(1 2)) (matrix-from-data '((2)(3))))
+    (compare-matrix ([] (matrix-from-data '((1 1)(2 2)(3 3))) :row '(0 0)) (matrix-from-data '((1 1))))
+    (compare-matrix ([] (matrix-from-data '((1 1)(2 2)(3 3))) :row '(0 1)) (matrix-from-data '((1 1)(2 2))))
+    (compare-matrix ([] (matrix-from-data '((1 1)(2 2)(3 3))) :row '(0 2)) (matrix-from-data '((1 1)(2 2)(3 3))))
+    (compare-matrix ([] (matrix-from-data '((1 1)(2 2)(3 3))) :row '(1 2)) (matrix-from-data '((2 2)(3 3))))
   )
 
   ;; [][]
   (push '[][] *matrix-namespace-unit-test*)
   (check
-    ;(equal ([][] 0 0 (matrix-from-data '((1))))   1)
+    (equal ([][] 0 0 (matrix-from-data '((1))))   1)
     (equal ([][] 0 1 (matrix-from-data '((1 2)))) 2)
     (equal ([][] 0 0 (matrix-from-data '((1 2)(3 4)))) 1)
     (equal ([][] 0 1 (matrix-from-data '((1 2)(3 4)))) 2)

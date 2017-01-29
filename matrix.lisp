@@ -219,47 +219,74 @@
 (defmacro nth-col (col mat)
   `(mapcar #'(lambda (x) (list (nth ,col x))) (matrix-data ,mat)))
 
+(push '[] *matrix-namespace*)
+(defun [] (mat &key (row nil) (col nil))
+  (flet ((gen-range (borders boundary)
+           (cond ((null borders)
+                   (iota-range 0 (1- boundary)))
+
+                  ((listp borders)
+                  (iota-range (car borders) (cadr borders)))
+
+                  (t
+                    (list borders)))))
+
+  (let ((mat-list (matrix-data mat))
+        (row-idx (gen-range row (matrix-rows mat)))
+        (col-idx (gen-range col (matrix-cols mat))))
+
+    (setf mat-tmp (matrix-from-data
+    (mapcar #'(lambda (r)
+                (mapcar #'(lambda (c)
+                            (nth c (nth r mat-list)))
+                col-idx)) row-idx)))
+
+    (if (and (= (matrix-rows mat-tmp) 1)
+             (= (matrix-cols mat-tmp) 1))
+      (caar (matrix-data mat-tmp))
+      mat-tmp))))
+
 ;;; Access subset of rows from given matrix.
 ;;; idx >= from AND idx <= to
-(push '[] *matrix-namespace*)
-(defun [] (from to mat)
-  (let ((mat-list (matrix-data mat))
-        (to-verif (min to (1- (matrix-rows mat))))
-        (mat-tmp nil))
-
-    (setf mat-tmp
-          (matrix-from-data
-            (mapcar #'(lambda (idx) (nth idx mat-list))
-                    (iota (1+ (- to-verif from)) from))))
-
-    (if (and (= (matrix-rows mat-tmp) 1)
-             (= (matrix-cols mat-tmp) 1))
-      (caar (matrix-data mat-tmp))
-      mat-tmp)))
-
-(defun (setf []) (val from to mat)
-  (let ((mat-list (matrix-data mat))
-        (to-verif (min to (1- (matrix-rows mat))))
-        (mat-tmp nil))
-
-    (setf mat-tmp
-          (matrix-from-data
-            (mapcar #'(lambda (idx) (setf (nth idx mat-list) (list val)))
-                    (iota (1+ (- to-verif from)) from))))
-
-    (if (and (= (matrix-rows mat-tmp) 1)
-             (= (matrix-cols mat-tmp) 1))
-      (caar (matrix-data mat-tmp))
-      mat-tmp)))
+;; TODO remove deprecated
+;(push '[] *matrix-namespace*)
+;(defun [] (from to mat)
+;  (let ((mat-list (matrix-data mat))
+;        (to-verif (min to (1- (matrix-rows mat))))
+;        (mat-tmp nil))
+;
+;    (setf mat-tmp
+;          (matrix-from-data
+;            (mapcar #'(lambda (idx) (nth idx mat-list))
+;                    (iota (1+ (- to-verif from)) from))))
+;
+;    (if (and (= (matrix-rows mat-tmp) 1)
+;             (= (matrix-cols mat-tmp) 1))
+;      (caar (matrix-data mat-tmp))
+;      mat-tmp)))
+;
+;(push 'setf-[] *matrix-namespace*)
+;(defun (setf []) (val from to mat)
+;  (let ((mat-list (matrix-data mat))
+;        (to-verif (min to (1- (matrix-rows mat))))
+;        (mat-tmp nil))
+;
+;    (setf mat-tmp
+;          (matrix-from-data
+;            (mapcar #'(lambda (idx) (setf (nth idx mat-list) (list val)))
+;                    (iota (1+ (- to-verif from)) from))))
+;
+;    (if (and (= (matrix-rows mat-tmp) 1)
+;             (= (matrix-cols mat-tmp) 1))
+;      (caar (matrix-data mat-tmp))
+;      mat-tmp)))
 
 ;;; Access value of 2D matrix.
 ;;; Does not control access outside of matrix.
+;;; TODO replace with []?
 (push '[][] *matrix-namespace*)
 (defun [][] (row col mat)
-  (let ((selected-row ([] row row mat)))
-    (setf val (mapcar #'(lambda (x) (nth col x)) (matrix-data selected-row)))
-
-    (nth 0 val)))
+  ([] mat :row row :col col))
 
 ;;; Remove column from given matrix.
 ;;; Create new matrix.
@@ -388,7 +415,8 @@
 ;;; Auxiliary function for DET function.
 (defun det-submatrix (col mat)
   (let ((last-row-idx (- (matrix-rows mat) 1)))
-    (remove-col col ([] 1 last-row-idx mat))))
+    (remove-col col ([] mat :row (list 1 last-row-idx)))))
+    ;(remove-col col ([] 1 last-row-idx mat))))
 
 ;;; Compute inverse of a given matrix.
 (push 'inv *matrix-namespace*)
