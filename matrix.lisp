@@ -69,7 +69,7 @@
 ;;; * (mean-cols mat)
 ;;; * (std-cols mat mean)
 ;;; * (mean-rows mat)
-;;; *(arg-sort-col-mat col_mat) TODO accept matrices with more than one column
+;;; * (arg-sort-col-mat col_mat) TODO accept matrices with more than one column
 ;;; * TODO (arg-sort-row-mat row_mat)
 ;;; * (nth-col-max col mat)
 ;;; * (nth-col-min col mat)
@@ -78,7 +78,7 @@
 ;;;
 ;;; MATRIX to MATRIX OPERATIONS
 ;;; * (vstack mat-left mat-right)
-;;; * TODO (hstack mat-top mat-bottom)
+;;; * (hstack mat-top mat-bottom)
 
 ;;; TODO 
 ;;; smart operations (add vector to all rows or columns of matrix)
@@ -99,16 +99,15 @@
 
 ;;; Compare rows and columns of two matrices and their data.
 (push 'compare-matrix *matrix-namespace*)
-(defun compare-matrix (mat_a mat_b)
+(defun compare-matrix (mat-a mat-b)
   (cond 
-    ((not (equal (matrix-rows mat_a) (matrix-rows mat_b))) nil)
-    ((not (equal (matrix-cols mat_a) (matrix-cols mat_b))) nil)
-    ((not (equal (matrix-data mat_a) (matrix-data mat_b))) nil)
+    ((not (equal (matrix-rows mat-a) (matrix-rows mat-b))) nil)
+    ((not (equal (matrix-cols mat-a) (matrix-cols mat-b))) nil)
+    ((not (equal (matrix-data mat-a) (matrix-data mat-b))) nil)
     (t t)))
 
 ;;; MATRIX CREATION
 
-(push 'empty-matrix-macro *matrix-namespace*)
 (defmacro empty-matrix-macro (rows cols &rest default)
   `(flet ((generate-empty-matrix (,rows ,cols)
        (loop for i from 1 to ,rows
@@ -147,19 +146,20 @@
   (empty-matrix-macro rows cols (make-list-rand-normal cols)))
 
 ;;; Control if all rows have the same number of columns.
-;;; TODO where to assign?
 (push 'valid-matrix *matrix-namespace*)
-(defmacro valid-matrix (row_lengths)
-  `(if (= 0
-          (apply #'+ (mapcar #'(lambda (x) (- x (car ,row_lengths))) ,row_lengths)))
-     t
-     nil))
+(defun valid-matrix (data)
+  (let ((exp-row-len
+          (make-list (length data) :initial-element (length (car data)))))
+
+    (if (equal (mapcar #'length data)
+               exp-row-len)
+      t
+      nil)))
 
 ;;; Create a matrix structure from given data (list of lists).
-;;; TODO should we use valid-matrix?
 (push 'matrix-from-data *matrix-namespace*)
 (defun matrix-from-data (data)
-  (if (not (valid-matrix (mapcar #'length data)))
+  (if (not (valid-matrix data))
       (error 'matrix-error :text "Length of matrix rows is not consistent."))
 
   (let* ((c (length (car data)))
@@ -177,12 +177,12 @@
 
 ;;; Adds additional layer (list) around given data in order to be able to create
 ;;; matrix from this data.
-(push 'matrix-from-data-peel *matrix-namespace*)
+;;; TODO create abstraction for peel
 (defun matrix-from-data-peel (data)
   (matrix-from-data (list data)))
 
 ;;; Removes layer (access the first item of list) from given matrix.
-(push 'matrix-data-peel *matrix-namespace*)
+;;; TODO create abstraction for peel
 (defun matrix-data-peel (data)
   (car (matrix-data data)))
 
@@ -298,14 +298,13 @@
                               (matrix-data mat)))))
 
 ;;; Auxiliary function for MATRIX-INDICES.
-(push 'matrix-indices-rec *matrix-namespace*)
-(defun matrix-indices-rec (rows cols orig_cols)
+(defun matrix-indices-rec (rows cols orig-cols)
   (if (eq rows 0)
     nil
     (cons (cons (1- rows) (1- cols))
           (if (eq (1- cols) 0)
-            (matrix-indices-rec (1- rows) orig_cols orig_cols)
-            (matrix-indices-rec rows (1- cols) orig_cols)))))
+            (matrix-indices-rec (1- rows) orig-cols orig-cols)
+            (matrix-indices-rec rows (1- cols) orig-cols)))))
 
 ;;; Generate list of matrix indices from given matrix dimensions.
 (push 'matrix-indices *matrix-namespace*)
@@ -386,7 +385,7 @@
     )))
 
 ;;; Extract submatrix used in recursive determinant calculation.
-(push 'det-submatrix *matrix-namespace*)
+;;; Auxiliary function for DET function.
 (defun det-submatrix (col mat)
   (let ((last-row-idx (- (matrix-rows mat) 1)))
     (remove-col col ([] 1 last-row-idx mat))))
@@ -436,7 +435,6 @@
 
 ;;; Calculate the new values for one cell of result matrix.
 ;;; Auxiliary function for DOT-REC.
-(push 'dot-cell-calc *matrix-namespace*)
 (defun dot-cell-calc (mat_out row_idx col_idx row_vec col_vec)
   (setf (nth col_idx (nth row_idx (matrix-data mat_out)))
         (vec-mult (car row_vec)
@@ -445,7 +443,6 @@
   mat_out)
 
 ;;; Auxiliary function for DOT function.
-(push 'dot-rec *matrix-namespace*)
 (defun dot-rec (mat_out mat_l mat_r mat_idxs)
   (if (eq (car mat_idxs) nil)
     mat_out
@@ -457,7 +454,7 @@
     (dot-rec (dot-cell-calc mat_out row_idx col_idx row_vec col_vec) mat_l mat_r (cdr mat_idxs)))))
 
 ;;; Control matrix dot product validity.
-(push 'valid-dot-op *matrix-namespace*)
+;;; Auxiliary function for DOT function.
 (defun valid-dot-op (mat_l mat_r)
   (if (not (= (matrix-cols mat_l)
               (matrix-rows mat_r)))
@@ -485,7 +482,6 @@
 ;;; TODO simplify/shorten definition of those functions, too much repetition
 
 ;;; Auxiliary function for ADD, SUBTRACT and MATRIX-MULT.
-(push 'element-wise-op *matrix-namespace*)
 (defun element-wise-op (lst_l lst_r op)
   (mapcar #'(lambda (x y) (mapcar op x y)) lst_l lst_r))
 
@@ -546,12 +542,10 @@
 ;;; MATRIX-ROW/COL OPERATIONS
 
 ;;; Auxiliary function for ELWISE-MAT-ROW-OP.
-(push 'elwise-row-row-op *matrix-namespace*)
 (defun elwise-row-row-op (lst_row_l lst_row_r op)
   (mapcar #'(lambda (x y) (apply op (list x y))) lst_row_l lst_row_r))
 
 ;;; Auxiliary function for SUBTRACT-ROW.
-(push 'elwise-mat-row-op *matrix-namespace*)
 (defun elwise-mat-row-op (lst_mat lst_row op)
   (mapcar #'(lambda (x) (elwise-row-row-op x lst_row op)) lst_mat))
 
@@ -581,7 +575,6 @@
 
 ;;; Perform aggregating operation on each row of matrix.
 ;;; Auxiliary function for SUM-ROWS.
-(push 'rows-op *matrix-namespace*)
 (defun rows-op (mat_lst op)
   (mapcar #'(lambda (x) (list (apply op x))) mat_lst))
 

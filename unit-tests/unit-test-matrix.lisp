@@ -2,11 +2,43 @@
 ;;;; 2016/04/27 
 
 ;;; TODO check error conditions in tests
-;;; TODO take out push functions out of deftest checks
 
 (in-package :cl-math)
 
 (setf *matrix-namespace-unit-test* '())
+
+(deftest test-basics-matrix ()
+  (push 'compare-matrix *matrix-namespace-unit-test*)
+  (check
+    (equal t (compare-matrix (matrix-from-data '()) (matrix-from-data '())))
+    (equal nil (compare-matrix (matrix-from-data '((1))) (matrix-from-data '())))
+    (equal nil (compare-matrix (matrix-from-data '((1 2))) (matrix-from-data '((1 3)))))
+    (equal nil (compare-matrix (matrix-from-data '((1 1)(1 1))) (matrix-from-data '((1 1)(1 2)))))
+    (equal nil (compare-matrix (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((1 3)))))
+    (equal nil (compare-matrix (matrix-from-data '((1 2 3)(3 4 5))) (matrix-from-data '((1 3)(2 4)))))
+  )
+
+  (push 'matrix-indices *matrix-namespace-unit-test*)
+  (check
+    (equal (matrix-indices 1 1) (list (cons 0 0)))
+    (equal (matrix-indices 1 2) (list (cons 0 1) (cons 0 0)))
+    (equal (matrix-indices 2 2) (list (cons 1 1) (cons 1 0) (cons 0 1) (cons 0 0)))
+  )
+
+  (push 'valid-matrix *matrix-namespace-unit-test*)
+  (check
+    (valid-matrix '())
+    (valid-matrix '(()))
+    (valid-matrix '((1)))
+    (valid-matrix '((1 2)))
+    (valid-matrix '((1)(2)))
+    (valid-matrix '((1 1)(2 2)))
+    (not (valid-matrix '((1)())))
+    (not (valid-matrix '(()(2))))
+    (not (valid-matrix '((1 1)(2))))
+    (not (valid-matrix '((1)(2 2))))
+  )
+)
 
 (deftest test-generate-matrix ()
   ;; empty-matrix
@@ -61,7 +93,7 @@
 )
 
 (deftest test-shape-matrix ()
-  ;(push 'shape *matrix-namespace-unit-test*)
+  (push 'shape *matrix-namespace-unit-test*)
   (check 
     (equal (shape (matrix-from-data '(()))) '(0 0))
     (equal (shape (matrix-from-data '((1)))) '(1 1))
@@ -89,6 +121,13 @@
                     (make-matrix :rows 2 :cols 3 :data '((1 3 5)(2 4 6))))
     (compare-matrix (transpose (make-matrix :rows 3 :cols 3 :data '((1 2 3)(4 5 6)(7 8 9))))
                     (make-matrix :rows 3 :cols 3 :data '((1 4 7)(2 5 8)(3 6 9))))
+  )
+
+  (push 'transpose-list *matrix-namespace-unit-test*)
+  (check
+    (equal (transpose-list '((1))) '((1)))
+    (equal (transpose-list '((1 2))) '((1)(2)))
+    (equal (transpose-list '((1)(2))) '((1 2)))
   )
 )
 
@@ -165,6 +204,15 @@
     (compare-matrix (remove-row 1 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((1)(3))))
   )
 
+  (push 'remove-row-list-matrix *matrix-namespace-unit-test*)
+  (check
+    (equal (remove-row-list-matrix 0 '((1))) 'nil)
+    (equal (remove-row-list-matrix 0 '((1)(2)(3))) '((2)(3)))
+    (equal (remove-row-list-matrix 1 '((1)(2)(3))) '((1)(3)))
+    (equal (remove-row-list-matrix 2 '((1)(2)(3))) '((1)(2)))
+    (equal (remove-row-list-matrix 2 '((1 1)(2 2)(3 3))) '((1 1)(2 2)))
+  )
+
   ;; prefix-const-val
   (push 'prefix-const-val *matrix-namespace-unit-test*)
   (check
@@ -199,7 +247,7 @@
   )
 )
 
-(deftest test-dot-product ()
+(deftest test-matrix-multiplication ()
   ;; dot
   (push 'dot *matrix-namespace-unit-test*)
   (check
@@ -208,6 +256,13 @@
     ;(compare-matrix (dot (matrix-from-data '((1 2))) (matrix-from-data '((1)(2)))) (matrix-from-data '((5))))
     (compare-matrix (dot (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((7 10)(15 22))))
     (compare-matrix (dot (matrix-from-data '((1 2 3)(4 5 6))) (matrix-from-data '((1 2)(3 4)(5 6)))) (matrix-from-data '((22 28)(49 64))))
+  )
+
+  (push 'vec-mult *matrix-namespace-unit-test*)
+  (check
+    (eq (vec-mult '(1) '(1)) 1)
+    (eq (vec-mult '(1 2) '(3 4)) 11)
+    (eq (vec-mult '(1 2 3) '(3 4 5)) 26)
   )
 )
 
@@ -378,6 +433,14 @@
     (< (abs (- (sigmoid-base 10) 1)) 1E-4)
     (< (abs (- (sigmoid-base -10) 0)) 1E-4)
   )
+
+  ;; sigmoid
+  (push 'sigmoid *matrix-namespace-unit-test*)
+  (check
+    (compare-matrix (sigmoid (matrix-from-data '((0)))) (matrix-from-data '((1/2))))
+    (< (abs (- (caar (matrix-data (sigmoid (matrix-from-data '((10)))))) 1)))
+    (< (abs (- (caar (matrix-data (sigmoid (matrix-from-data '((-10)))))) 0)))
+  )
 )
 
 (deftest test-value-extremes ()
@@ -492,13 +555,14 @@
 
 (deftest test-matrix ()
   (combine-results
+    (test-basics-matrix)
     (test-generate-matrix)
     (test-matrix-modifications)
     (test-shape-matrix)
     (test-transpose-matrix)
     (test-access-matrix)
     (test-element-wise-operations)
-    (test-dot-product)
+    (test-matrix-multiplication)
     (test-aggregating-functions)
     (test-sort-functions)
     (test-mathematical-functions)
@@ -507,7 +571,7 @@
     (test-matrix-to-matrix)
 
     (unit-test-coverage *matrix-namespace* *matrix-namespace-unit-test* "matrix")
-    ))
+  ))
 
 (if (test-matrix)
   (print 'unit-test-matrix-passed)
