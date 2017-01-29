@@ -1,7 +1,7 @@
 ;;;; Martin Kersner, m.kersner@gmail.com
 ;;;; 2016/04/27 
 ;;;;
-;;;; Math 2.0
+;;;; Marix 2.0
 ;;;; Perform mathematical operations, mainly with matrices (vector is considered
 ;;;; as matrix as well). Matrices are represented by lists. Most operations have
 ;;;; strict prototype in order to avoid running additional functions and don't
@@ -19,7 +19,7 @@
 ;;; * (matrix-data-peel data)
 ;;;
 ;;; SINGLE MATRIX OPERATIONS
-;;; * TODO (shape mat)
+;;; * (shape mat)
 ;;; * (transpose mat)
 ;;; * (nth-row row mat)
 ;;; * (nth-col col mat)
@@ -106,7 +106,7 @@
     ((not (equal (matrix-data mat_a) (matrix-data mat_b))) nil)
     (t t)))
 
-;;; MATRIX CREATION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; MATRIX CREATION
 
 (push 'empty-matrix-macro *matrix-namespace*)
 (defmacro empty-matrix-macro (rows cols &rest default)
@@ -180,7 +180,12 @@
 (defun matrix-data-peel (data)
   (car (matrix-data data)))
 
-;;; SINGLE MATRIX OPERATIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; SINGLE MATRIX OPERATIONS
+
+(push 'shape *matrix-namespace*)
+(defun shape (mat)
+  (list (matrix-rows mat)
+          (matrix-cols mat)))
 
 ;;; Auxiliary function. Shouldn't be employed by itself? TODO move to somewhere else?
 (push 'transpose-list *matrix-namespace*)
@@ -414,7 +419,7 @@
        (mapcar #'(lambda (row)
                    (mapcar #',lmbd-fun row)) matrix-lst))))
 
-;;; MATRIX MULTIPLICATION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; MATRIX MULTIPLICATION
 
 ;;; Element-wise product of two vectors.
 ;;; Assume correct vector dimensions.
@@ -470,7 +475,7 @@
       (caar (matrix-data mat_out))
       mat_out)))
 
-;;; ELEMENT-WISE OPERATIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ELEMENT-WISE OPERATIONS
 ;;; TODO simplify/shorten definition of those functions, too much repetition
 
 ;;; Auxiliary function for ADD, SUBTRACT and MATRIX-MULT.
@@ -501,7 +506,7 @@
   (matrix-from-data
     (element-wise-op (matrix-data mat_l) (matrix-data mat_r) #'/)))
 
-;;; MATRIX & VALUE OPERATIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; MATRIX & VALUE OPERATIONS
 
 ;;; Subtract matrix value from given matrix.
 (push 'value-matrix-subtract *matrix-namespace*)
@@ -532,7 +537,7 @@
     (mapcar #'(lambda (x) (mapcar #'(lambda (y) (expt y val)) x))
             (matrix-data mat))))
 
-;;; MATRIX-ROW/COL OPERATIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; MATRIX-ROW/COL OPERATIONS
 
 ;;; Auxiliary function for ELWISE-MAT-ROW-OP.
 (push 'elwise-row-row-op *matrix-namespace*)
