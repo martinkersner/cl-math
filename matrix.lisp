@@ -155,19 +155,25 @@
      t
      nil))
 
-;;; Create a matrix structure from given data (lists of lists).
+;;; Create a matrix structure from given data (list of lists).
 ;;; TODO should we use valid-matrix?
 (push 'matrix-from-data *matrix-namespace*)
 (defun matrix-from-data (data)
   (if (not (valid-matrix (mapcar #'length data)))
       (error 'matrix-error :text "Length of matrix rows is not consistent."))
 
-  (let ((rows (length data))
-        (cols (car (mapcar #'length data))))
+  (let* ((c (length (car data)))
+         (r (if (= c 0)
+                 0
+                 (length data)))
+         (d (if (or (= r 0)
+                       (= c 0))
+                 nil
+                 data)))
 
-    (make-matrix :rows rows
-                 :cols cols
-                 :data data)))
+    (make-matrix :rows r
+                 :cols c
+                 :data d)))
 
 ;;; Adds additional layer (list) around given data in order to be able to create
 ;;; matrix from this data.

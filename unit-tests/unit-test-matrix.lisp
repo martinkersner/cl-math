@@ -32,6 +32,8 @@
   ;; matrix-from-data
   (push 'matrix-from-data *matrix-namespace-unit-test*)
   (check
+    (compare-matrix (matrix-from-data '()) (make-matrix :rows 0 :cols 0 :data '()))
+    (compare-matrix (matrix-from-data '(())) (make-matrix :rows 0 :cols 0 :data '()))
     (compare-matrix (matrix-from-data '((1))) (make-matrix :rows 1 :cols 1 :data '((1))))
     (compare-matrix (matrix-from-data '((1 2))) (make-matrix :rows 1 :cols 2 :data '((1 2))))
     (compare-matrix (matrix-from-data '((1)(2))) (make-matrix :rows 2 :cols 1 :data '((1)(2))))
@@ -61,8 +63,7 @@
 (deftest test-shape-matrix ()
   ;(push 'shape *matrix-namespace-unit-test*)
   (check 
-    ; TODO
-    ;(equal (shape (matrix-from-data '(()))) '(0 0))
+    (equal (shape (matrix-from-data '(()))) '(0 0))
     (equal (shape (matrix-from-data '((1)))) '(1 1))
     (equal (shape (matrix-from-data '((1 2)))) '(1 2))
     (equal (shape (matrix-from-data '((1)(2)))) '(2 1))
