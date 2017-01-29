@@ -19,7 +19,7 @@
 ;;; * (matrix-data-peel data)
 ;;;
 ;;; SINGLE MATRIX OPERATIONS
-;;; * (shape mat)
+;;; * (matrix-shape mat)
 ;;; * (transpose mat)
 ;;; * (nth-row row mat)
 ;;; * (nth-col col mat)
@@ -188,8 +188,8 @@
 
 ;;; SINGLE MATRIX OPERATIONS
 
-(push 'shape *matrix-namespace*)
-(defun shape (mat)
+(push 'matrix-shape *matrix-namespace*)
+(defun matrix-shape (mat)
   (list (matrix-rows mat)
           (matrix-cols mat)))
 

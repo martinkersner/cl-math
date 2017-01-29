@@ -93,13 +93,13 @@
 )
 
 (deftest test-shape-matrix ()
-  (push 'shape *matrix-namespace-unit-test*)
+  (push 'matrix-shape *matrix-namespace-unit-test*)
   (check 
-    (equal (shape (matrix-from-data '(()))) '(0 0))
-    (equal (shape (matrix-from-data '((1)))) '(1 1))
-    (equal (shape (matrix-from-data '((1 2)))) '(1 2))
-    (equal (shape (matrix-from-data '((1)(2)))) '(2 1))
-    (equal (shape (matrix-from-data '((1 2)(3 4)))) '(2 2))
+    (equal (matrix-shape (matrix-from-data '(()))) '(0 0))
+    (equal (matrix-shape (matrix-from-data '((1)))) '(1 1))
+    (equal (matrix-shape (matrix-from-data '((1 2)))) '(1 2))
+    (equal (matrix-shape (matrix-from-data '((1)(2)))) '(2 1))
+    (equal (matrix-shape (matrix-from-data '((1 2)(3 4)))) '(2 2))
   )
 )
 
