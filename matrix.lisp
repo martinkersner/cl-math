@@ -219,9 +219,54 @@
 (defmacro nth-col (col mat)
   `(mapcar #'(lambda (x) (list (nth ,col x))) (matrix-data ,mat)))
 
+(push 'matrix-smart-convert *matrix-namespace*)
+(defun matrix-smart-convert (mat)
+  (if (equal (matrix-shape mat) '(1 1))
+    (caar (matrix-data mat))
+    mat))
+
+;;; Auxiliary function for [].
+(defun []-op (mat-list row-idx col-from col-to)
+  (let ((col-to (1+ col-to)))
+
+    (mapcar #'(lambda (r)
+                (subseq (nth r mat-list) col-from col-to))
+            row-idx)))
+
 (push '[] *matrix-namespace*)
 (defun [] (mat &key (row nil) (col nil))
-  (flet ((gen-range (borders boundary)
+  (multiple-value-bind
+    (mat-list row-idx col-from col-to) ([]-prep mat :row row :col col)
+
+    (let ((mat-tmp (matrix-from-data
+                     ([]-op mat-list row-idx col-from col-to))))
+
+    (matrix-smart-convert mat-tmp))))
+
+;;; Auxiliary function for [].
+(defun setf-[] (mat-list val-list row-idx col-from col-to)
+  (let ((col-to (1+ col-to)))
+
+  (mapcar #'(lambda (r v)
+              (setf
+                (subseq (nth r mat-list) col-from col-to)
+                v))
+          row-idx val-list)))
+
+(push 'setf-[] *matrix-namespace*)
+(defun (setf []) (val mat &key (row nil) (col nil))
+  (multiple-value-bind
+    (mat-list row-idx col-from col-to) ([]-prep mat :row row :col col)
+
+    (let* ((col-idx (list (first col-idx) (car (last col-idx))))
+           (mat-tmp (matrix-from-data
+                      (setf-[] mat-list val row-idx col-from col-to))))
+
+    (matrix-smart-convert mat-tmp))
+    ))
+
+(defun []-prep (mat &key (row nil) (col nil))
+  (flet ((gen-enum (borders boundary)
            (cond ((null borders)
                    (iota-range 0 (1- boundary)))
 
@@ -229,57 +274,25 @@
                   (iota-range (car borders) (cadr borders)))
 
                   (t
-                    (list borders)))))
+                    (list borders))))
 
-  (let ((mat-list (matrix-data mat))
-        (row-idx (gen-range row (matrix-rows mat)))
-        (col-idx (gen-range col (matrix-cols mat))))
+        (gen-col-range (borders boundary)
+          (cond ((null borders)
+                 (values 0 (1- boundary)))
 
-    (setf mat-tmp (matrix-from-data
-    (mapcar #'(lambda (r)
-                (mapcar #'(lambda (c)
-                            (nth c (nth r mat-list)))
-                col-idx)) row-idx)))
+                ((listp borders)
+                 (values (car borders) (cadr borders)))
 
-    (if (and (= (matrix-rows mat-tmp) 1)
-             (= (matrix-cols mat-tmp) 1))
-      (caar (matrix-data mat-tmp))
-      mat-tmp))))
+                (t
+                  (values borders borders)))))
 
-;;; Access subset of rows from given matrix.
-;;; idx >= from AND idx <= to
-;; TODO remove deprecated
-;(push '[] *matrix-namespace*)
-;(defun [] (from to mat)
-;  (let ((mat-list (matrix-data mat))
-;        (to-verif (min to (1- (matrix-rows mat))))
-;        (mat-tmp nil))
-;
-;    (setf mat-tmp
-;          (matrix-from-data
-;            (mapcar #'(lambda (idx) (nth idx mat-list))
-;                    (iota (1+ (- to-verif from)) from))))
-;
-;    (if (and (= (matrix-rows mat-tmp) 1)
-;             (= (matrix-cols mat-tmp) 1))
-;      (caar (matrix-data mat-tmp))
-;      mat-tmp)))
-;
-;(push 'setf-[] *matrix-namespace*)
-;(defun (setf []) (val from to mat)
-;  (let ((mat-list (matrix-data mat))
-;        (to-verif (min to (1- (matrix-rows mat))))
-;        (mat-tmp nil))
-;
-;    (setf mat-tmp
-;          (matrix-from-data
-;            (mapcar #'(lambda (idx) (setf (nth idx mat-list) (list val)))
-;                    (iota (1+ (- to-verif from)) from))))
-;
-;    (if (and (= (matrix-rows mat-tmp) 1)
-;             (= (matrix-cols mat-tmp) 1))
-;      (caar (matrix-data mat-tmp))
-;      mat-tmp)))
+    (multiple-value-bind (col-from col-to) (gen-col-range col (matrix-cols mat))
+
+      (values
+        (matrix-data mat)
+        (gen-enum row (matrix-rows mat))
+        col-from
+        col-to))))
 
 ;;; Access value of 2D matrix.
 ;;; Does not control access outside of matrix.
@@ -667,15 +680,16 @@
       (mapcar #'(lambda (val) (/ val row-num)) std-list)))))
 
 ;;; Normalize data.
-(push 'normalize *matrix-namespace*)
-(defun normalize (mat mean std)
-  (let ((mean-list (matrix-data-peel mean))
-        (std-list (matrix-data-peel std)))
-
-    (matrix-from-data
-      (mapcar #'(lambda (row)
-                  (mapcar #'/ (mapcar #'- row mean-list) std-list))
-              (matrix-data mat)))))
+;;; TODO move to different file/library
+;(push 'normalize *matrix-namespace*)
+;(defun normalize (mat mean std)
+;  (let ((mean-list (matrix-data-peel mean))
+;        (std-list (matrix-data-peel std)))
+;
+;    (matrix-from-data
+;      (mapcar #'(lambda (row)
+;                  (mapcar #'/ (mapcar #'- row mean-list) std-list))
+;              (matrix-data mat)))))
 
 ;;; Sorts column vector and return indices of sorted vector.
 (push 'arg-sort-col-mat *matrix-namespace*)

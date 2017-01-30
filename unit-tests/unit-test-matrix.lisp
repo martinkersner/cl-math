@@ -38,6 +38,13 @@
     (not (valid-matrix '((1 1)(2))))
     (not (valid-matrix '((1)(2 2))))
   )
+
+  (push 'matrix-smart-convert *matrix-namespace-unit-test*)
+  (check
+    (= (matrix-smart-convert (matrix-from-data '((1)))) 1)
+    (compare-matrix (matrix-smart-convert (matrix-from-data '((1 2)))) (matrix-from-data '((1 2))))
+    (compare-matrix (matrix-smart-convert (matrix-from-data '((1)(2)))) (matrix-from-data '((1)(2))))
+  )
 )
 
 (deftest test-generate-matrix ()
@@ -169,6 +176,25 @@
     (compare-matrix ([] (matrix-from-data '((1 1)(2 2)(3 3))) :row '(0 1)) (matrix-from-data '((1 1)(2 2))))
     (compare-matrix ([] (matrix-from-data '((1 1)(2 2)(3 3))) :row '(0 2)) (matrix-from-data '((1 1)(2 2)(3 3))))
     (compare-matrix ([] (matrix-from-data '((1 1)(2 2)(3 3))) :row '(1 2)) (matrix-from-data '((2 2)(3 3))))
+  )
+
+  (push 'setf-[] *matrix-namespace-unit-test*)
+  (let ((tmp-matrix (matrix-from-data '((0 1 2 3)(4 5 6 7)(8 9 10 11)))))
+    (setf ([] tmp-matrix :row 0 :col 0) '((99)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((99 1 2 3)(4 5 6 7)(8 9 10 11)))))
+
+    (setf ([] tmp-matrix :row 0 :col '(2 3)) '((100 100)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((99 1 100 100)(4 5 6 7)(8 9 10 11)))))
+
+    (setf ([] tmp-matrix :row '(1 2) :col 1) '((111)(111)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((99 1 100 100)(4 111 6 7)(8 111 10 11)))))
+
+    (setf ([] tmp-matrix :row '(1 2) :col '(0 2)) '((200 200 200)(200 200 200)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((99 1 100 100)(200 200 200 7)(200 200 200 11)))))
   )
 
   ;; [][]
