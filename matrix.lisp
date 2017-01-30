@@ -25,17 +25,20 @@
 ;;; * (nth-col col mat)
 ;;; * ([] from to mat)
 ;;; * ([][] row col mat)
-;;; * (remove-col col mat)
-;;; * (remove-row col mat)
+;;; * (remove-col col-idx mat)
+;;; * (remove-row row-idx mat)
 ;;; * (remove-row-list-matrix row list-mat)
 ;;; * (prefix-const-val val mat)
 ;;; * (suffix-const-val val mat)
 ;;; * (insert-const-val idx val mat)
 ;;; * (matrix-indices rows cols)
+
 ;;; * (sigmoid mat)
 ;;; * (sigmoid-prime mat)
+
 ;;; * (shuffle-rows mat)
 ;;; * (shuffle-rows-spec mat idx-list)
+
 ;;; * (det mat)
 ;;; * (inv mat)
 ;;;
@@ -47,30 +50,43 @@
 ;;; ** requires the same dimensions of both matrices
 ;;; ** uniqueness of parameter order depends on commutative property of employed
 ;;;    mathematical function
-;;; * (add mat1 mat2)
-;;; * (subtract mat1 mat2)
-;;; * (matrix-mult mat1 mat2)
-;;; * (matrix-div mat1 mat2)
+;;; * (+mm m1 m2)
+;;; * (-mm m1 m2)
+;;; * (*mm m1 m2)
+;;; * (/mm m1 m2)
 ;;;
 ;;; MATRIX & VALUE OPERATIONS
-;;; TODO unite names
-;;; * (value-matrix-subtract val mat)
-;;; * (add-value val mat)
-;;; * (multiply val mat)
-;;; * (power val mat)
+;;; * (+mv mat val)
+;;; * (-mv mat val)
+;;; * (*mv mat val)
+;;; * (/mv mat val)
+;;; * (power mat val)
 ;;;
-;;; MATRIX-ROW/COL OPERATIONS
-;;; * (subtract-row mat row)
-;;; * (subtract-col mat col)
+;;; MATRIX-ROW OPERATIONS
+;;; * (+mr mat row)
+;;; * (-mr mat row)
+;;; * (*mr mat row)
+;;; * (/mr mat row)
+;;;
+;;; * MATRIX-COL OPERATIONS
+;;; * (+mc mat col)
+;;; * (-mc mat col)
+;;; * (*mc mat col)
+;;; * (/mc mat col)
+
 ;;; * (subtract-val-col val col mat)
 ;;; * (sum-rows mat)
 ;;; * (sum-cols mat)
 ;;; * (sum mat)
+
+;;; * (mean-rows mat)
+;;; * TODO (std-rows mat mean)
 ;;; * (mean-cols mat)
 ;;; * (std-cols mat mean)
-;;; * (mean-rows mat)
+
 ;;; * (arg-sort-col-mat col_mat) TODO accept matrices with more than one column
 ;;; * TODO (arg-sort-row-mat row_mat)
+
 ;;; * (nth-col-max col mat)
 ;;; * (nth-col-min col mat)
 ;;; * (nth-row-max row mat)
@@ -84,7 +100,7 @@
 ;;; smart operations (add vector to all rows or columns of matrix)
 ;;; nth-row nth-col base functions for returning complete matrices
 ;;; unit test for EVERY FUNCTION
-;;; merge similar code from multiply, power, value-matrix-subtract functions together
+;;; merge similar code from *mv, power, -mv functions together
 ;;; more inspiration from numpy
 ;;; generate all functions, keep them in categories
 
@@ -304,15 +320,15 @@
 ;;; Remove column from given matrix.
 ;;; Create new matrix.
 (push 'remove-col *matrix-namespace*)
-(defun remove-col (col mat)
+(defun remove-col (col-idx mat)
   (matrix-from-data
-    (mapcar #'(lambda (x) (remove-nth col x)) (matrix-data mat))))
+    (mapcar #'(lambda (x) (remove-nth col-idx x)) (matrix-data mat))))
 
 ;;; Removes row from given matrix.
 ;;; Create a new matrix.
 (push 'remove-row *matrix-namespace*)
-(defun remove-row (row mat)
-  (matrix-from-data (remove-nth row (matrix-data mat))))
+(defun remove-row (row-idx mat)
+  (matrix-from-data (remove-nth row-idx (matrix-data mat))))
 
 ;;; Remove row from matrix composed of lists.
 (push 'remove-row-list-matrix *matrix-namespace*)
@@ -373,7 +389,7 @@
 (push 'sigmoid-prime *matrix-namespace*)
 (defun sigmoid-prime (mat)
   (let ((s (sigmoid mat)))
-    (matrix-mult s (value-matrix-subtract 1 s))))
+    (*mm s (-mv s 1))))
 
 ;;; Randomly shuffle rows of matrix.
 ;;; TODO unit test?
@@ -444,17 +460,17 @@
         (error 'matrix-error :text "Matrix must be square"))
 
       ((eq rows 2)
-        (multiply (/ 1 (det mat))
-                  (matrix-from-data (list (list    ([][] 1 1 mat)  (- ([][] 0 1 mat)))
-                                          (list (- ([][] 1 0 mat))    ([][] 0 0 mat))))))
+        (*mv (matrix-from-data (list (list    ([][] 1 1 mat)  (- ([][] 0 1 mat)))
+                                          (list (- ([][] 1 0 mat))    ([][] 0 0 mat))))
+             (/ 1 (det mat))))
 
       (t
-        (multiply (/ 1 (det mat))
-           (transpose (matrix-from-data
+        (*mv (transpose (matrix-from-data
              (mapcar #'(lambda (row) (progn (setf tmp-row-flag (if (is-odd row) -1 1))
                                             (mapcar #'(lambda (col) (progn (setf tmp-col-flag (if (is-odd col) -1 1))
                                                                            (apply #'* (list tmp-row-flag tmp-col-flag (det (remove-col col (remove-row row mat)))))))
-                               (iota cols)))) (iota rows)))))))))
+                               (iota cols)))) (iota rows))))
+             (/ 1 (det mat)))))))
 
 ;;; Apply lambda function to each value of matrix.
 (push 'apply-matrix *matrix-namespace*)
@@ -527,55 +543,59 @@
   (mapcar #'(lambda (x y) (mapcar op x y)) lst_l lst_r))
 
 ;;; Element-wise add for matrices.
-(push 'add *matrix-namespace*)
-(defun add (mat_l mat_r)
+(push '+mm *matrix-namespace*)
+(defun +mm (mat-l mat-r)
   (matrix-from-data
-    (element-wise-op (matrix-data mat_l) (matrix-data mat_r) #'+)))
+    (element-wise-op (matrix-data mat-l) (matrix-data mat-r) #'+)))
 
 ;;; Elementwise subtract for matrices.
-(push 'subtract *matrix-namespace*)
-(defun subtract (mat_l mat_r)
+(push '-mm *matrix-namespace*)
+(defun -mm (mat-l mat-r)
   (matrix-from-data
-    (element-wise-op (matrix-data mat_l) (matrix-data mat_r) #'-)))
+    (element-wise-op (matrix-data mat-l) (matrix-data mat-r) #'-)))
 
 ;;; Elementwise matrix multiplication.
-(push 'matrix-mult *matrix-namespace*)
-(defun matrix-mult (mat_l mat_r)
+(push '*mm *matrix-namespace*)
+(defun *mm (mat-l mat-r)
   (matrix-from-data
-    (element-wise-op (matrix-data mat_l) (matrix-data mat_r) #'*)))
+    (element-wise-op (matrix-data mat-l) (matrix-data mat-r) #'*)))
 
-(push 'matrix-div *matrix-namespace*)
-(defun matrix-div (mat_l mat_r)
+(push '/mm *matrix-namespace*)
+(defun /mm (mat_l mat_r)
   (matrix-from-data
     (element-wise-op (matrix-data mat_l) (matrix-data mat_r) #'/)))
 
 ;;; MATRIX & VALUE OPERATIONS
 
+(defmacro mv-op (mat op val)
+  `(matrix-from-data
+    (mapcar #'(lambda (row)
+                (mapcar #'(lambda (col) (funcall ,op ,val col))
+                        row))
+            (matrix-data ,mat))))
+
 ;;; Subtract matrix value from given matrix.
-(push 'value-matrix-subtract *matrix-namespace*)
-(defun value-matrix-subtract (val mat)
-  (matrix-from-data
-    (mapcar #'(lambda (x) (mapcar #'(lambda (y) (- val y)) x))
-            (matrix-data mat))))
+(push '-mv *matrix-namespace*)
+(defun -mv (mat val)
+  (mv-op mat #'- val))
 
 ;;; Add constant value to given matrix.
-;;; TODO merge base of value-matrix based functions
-(push 'add-value *matrix-namespace*)
-(defun add-value (val mat)
-  (matrix-from-data
-    (mapcar #'(lambda (x) (mapcar #'(lambda (y) (+ y val)) x))
-            (matrix-data mat))))
+(push '+mv *matrix-namespace*)
+(defun +mv (mat val)
+  (mv-op mat #'+ val))
 
 ;;; Multiply matrix with a given value.
-(push 'multiply *matrix-namespace*)
-(defun multiply (val mat)
-  (matrix-from-data
-    (mapcar #'(lambda (x) (mapcar #'(lambda (y) (* y val)) x))
-            (matrix-data mat))))
+(push '*mv *matrix-namespace*)
+(defun *mv (mat val)
+  (mv-op mat #'* val))
+
+(push '/mv *matrix-namespace*)
+(defun /mv (mat val)
+  (mv-op mat #'/ val))
 
 ;;; Compute power using given exponent at each cell of matrix.
 (push 'power *matrix-namespace*)
-(defun power (val mat)
+(defun power (mat val)
   (matrix-from-data
     (mapcar #'(lambda (x) (mapcar #'(lambda (y) (expt y val)) x))
             (matrix-data mat))))
@@ -586,24 +606,58 @@
 (defun elwise-row-row-op (lst_row_l lst_row_r op)
   (mapcar #'(lambda (x y) (apply op (list x y))) lst_row_l lst_row_r))
 
-;;; Auxiliary function for SUBTRACT-ROW.
+;;; Auxiliary function for -mr.
 (defun elwise-mat-row-op (lst_mat lst_row op)
   (mapcar #'(lambda (x) (elwise-row-row-op x lst_row op)) lst_mat))
 
-;;; Element-wise subtract values of given row from all rows in matrix.
-(push 'subtract-row *matrix-namespace*)
-(defun subtract-row (mat row)
+;;; Auxiliary function for matrix and row operations.
+;;; Used by +mr, -mr, *mr and /mr.
+(defun mr-op (mat row op)
   (matrix-from-data
-    (elwise-mat-row-op (matrix-data mat) (car (matrix-data row)) #'-)))
+    (elwise-mat-row-op (matrix-data mat) (car (matrix-data row)) op)))
 
-;;; Element-wise subtract values of given column from all columns in matrix.
-(push 'subtract-col *matrix-namespace*)
-(defun subtract-col (col mat)
+;;; Element-wise subtract values of given row from all rows in matrix.
+(push '-mr *matrix-namespace*)
+(defun -mr (mat row)
+  (mr-op mat row #'-))
+
+(push '+mr *matrix-namespace*)
+(defun +mr (mat row)
+  (mr-op mat row #'+))
+
+(push '*mr *matrix-namespace*)
+(defun *mr (mat row)
+  (mr-op mat row #'*))
+
+(push '/mr *matrix-namespace*)
+(defun /mr (mat row)
+  (mr-op mat row #'/))
+
+;;; Auxiliary function for matrix and column operations.
+;;; Used by +mc, -mc, *mc and /mc.
+(defun mc-op (mat col op)
   (let ((col-trans (transpose col))
         (mat-trans (transpose mat)))
 
     (transpose
-      (subtract-row col-trans mat-trans))))
+      (mr-op col-trans mat-trans op))))
+
+(push '+mc *matrix-namespace*)
+(defun +mc (col mat)
+  (mc-op mat col #'+))
+
+;;; Element-wise subtract values of given column from all columns in matrix.
+(push '-mc *matrix-namespace*)
+(defun -mc (col mat)
+  (mc-op mat col #'-))
+
+(push '*mc *matrix-namespace*)
+(defun *mc (col mat)
+  (mc-op mat col #'*))
+
+(push '/mc *matrix-namespace*)
+(defun /mc (col mat)
+  (mc-op mat col #'/))
 
 ;;; Subtract value from specified column in matrix.
 (push 'subtract-val-col *matrix-namespace*)

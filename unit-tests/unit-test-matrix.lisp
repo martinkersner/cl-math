@@ -309,83 +309,83 @@
 )
 
 (deftest test-element-wise-operations ()
-  ;; add
-  (push 'add *matrix-namespace-unit-test*)
+  ;; +mm
+  (push '+mm *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (add (matrix-from-data '((1))) (matrix-from-data '((1)))) (matrix-from-data '((2))))
-    (compare-matrix (add (matrix-from-data '((1 2))) (matrix-from-data '((3 4)))) (matrix-from-data '((4 6))))
-    (compare-matrix (add (matrix-from-data '((1)(2))) (matrix-from-data '((3)(4)))) (matrix-from-data '((4)(6))))
-    (compare-matrix (add (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((5 6)(7 8)))) (matrix-from-data '((6 8)(10 12))))
+    (compare-matrix (+mm (matrix-from-data '((1))) (matrix-from-data '((1)))) (matrix-from-data '((2))))
+    (compare-matrix (+mm (matrix-from-data '((1 2))) (matrix-from-data '((3 4)))) (matrix-from-data '((4 6))))
+    (compare-matrix (+mm (matrix-from-data '((1)(2))) (matrix-from-data '((3)(4)))) (matrix-from-data '((4)(6))))
+    (compare-matrix (+mm (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((5 6)(7 8)))) (matrix-from-data '((6 8)(10 12))))
   )
     
-  ;; subtract
-  (push 'subtract *matrix-namespace-unit-test*)
+  ;; -mm
+  (push '-mm *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (subtract (matrix-from-data '((1))) (matrix-from-data '((1)))) (matrix-from-data '((0))))
-    (compare-matrix (subtract (matrix-from-data '((1 2))) (matrix-from-data '((2 4)))) (matrix-from-data '((-1 -2))))
-    (compare-matrix (subtract (matrix-from-data '((1)(2))) (matrix-from-data '((3)(5)))) (matrix-from-data '((-2)(-3))))
-    (compare-matrix (subtract (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((4 7)(5 10)))) (matrix-from-data '((-3 -5)(-2 -6))))
+    (compare-matrix (-mm (matrix-from-data '((1))) (matrix-from-data '((1)))) (matrix-from-data '((0))))
+    (compare-matrix (-mm (matrix-from-data '((1 2))) (matrix-from-data '((2 4)))) (matrix-from-data '((-1 -2))))
+    (compare-matrix (-mm (matrix-from-data '((1)(2))) (matrix-from-data '((3)(5)))) (matrix-from-data '((-2)(-3))))
+    (compare-matrix (-mm (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((4 7)(5 10)))) (matrix-from-data '((-3 -5)(-2 -6))))
   )
     
-  ;; add-value
-  (push 'add-value *matrix-namespace-unit-test*)
+  ;; +mv
+  (push '+mv *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (add-value 1 (matrix-from-data '((1)))) (matrix-from-data '((2))))
-    (compare-matrix (add-value 2 (matrix-from-data '((1 2)))) (matrix-from-data '((3 4))))
-    (compare-matrix (add-value 3 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((4 5)(6 7))))
+    (compare-matrix (+mv (matrix-from-data '((1)))        1) (matrix-from-data '((2))))
+    (compare-matrix (+mv (matrix-from-data '((1 2)))      2) (matrix-from-data '((3 4))))
+    (compare-matrix (+mv (matrix-from-data '((1 2)(3 4))) 3) (matrix-from-data '((4 5)(6 7))))
   )
     
-  ;; multiply (by constant)
-  (push 'multiply *matrix-namespace-unit-test*)
+  ;; *mv (by constant)
+  (push '*mv *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (multiply 2 (matrix-from-data '((1)))) (matrix-from-data '((2))))
-    (compare-matrix (multiply 3 (matrix-from-data '((1 2)))) (matrix-from-data '((3 6))))
-    (compare-matrix (multiply 3 (matrix-from-data '((1)(2)))) (matrix-from-data '((3)(6))))
-    (compare-matrix (multiply 4 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((4 8)(12 16))))
+    (compare-matrix (*mv (matrix-from-data '((1)))        2) (matrix-from-data '((2))))
+    (compare-matrix (*mv (matrix-from-data '((1 2)))      3) (matrix-from-data '((3 6))))
+    (compare-matrix (*mv (matrix-from-data '((1)(2)))     3) (matrix-from-data '((3)(6))))
+    (compare-matrix (*mv (matrix-from-data '((1 2)(3 4))) 4) (matrix-from-data '((4 8)(12 16))))
   )
     
-  ;; value-matrix-subtract
-  (push 'value-matrix-subtract *matrix-namespace-unit-test*)
+  ;; -mv
+  (push '-mv *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (value-matrix-subtract 0 (matrix-from-data '((1)))) (matrix-from-data '((-1))))
-    (compare-matrix (value-matrix-subtract 1 (matrix-from-data '((1)(2)))) (matrix-from-data '((0)(-1))))
-    (compare-matrix (value-matrix-subtract 2 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((1 0)(-1 -2))))
+    (compare-matrix (-mv (matrix-from-data '((1)))        0) (matrix-from-data '((-1))))
+    (compare-matrix (-mv (matrix-from-data '((1)(2)))     1) (matrix-from-data '((0)(-1))))
+    (compare-matrix (-mv (matrix-from-data '((1 2)(3 4))) 2) (matrix-from-data '((1 0)(-1 -2))))
   )
     
-  ;; matrix-mult
-  (push 'matrix-mult *matrix-namespace-unit-test*)
+  ;; *mm
+  (push '*mm *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (matrix-mult  (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((-1))))
-    (compare-matrix (matrix-mult  (matrix-from-data '((1)(2))) (matrix-from-data '((2)(8)))) (matrix-from-data '((2)(16))))
-    (compare-matrix (matrix-mult  (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((2 3)(9 0)))) (matrix-from-data '((2 6)(27 0))))
-    (compare-matrix (matrix-mult  (matrix-from-data '((1 2 3)(4 5 6)(7 8 9))) (matrix-from-data '((0 0 0)(7 6 5)(1 2 3)))) (matrix-from-data '((0 0 0)(28 30 30)(7 16 27))))
+    (compare-matrix (*mm  (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((-1))))
+    (compare-matrix (*mm  (matrix-from-data '((1)(2))) (matrix-from-data '((2)(8)))) (matrix-from-data '((2)(16))))
+    (compare-matrix (*mm  (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((2 3)(9 0)))) (matrix-from-data '((2 6)(27 0))))
+    (compare-matrix (*mm  (matrix-from-data '((1 2 3)(4 5 6)(7 8 9))) (matrix-from-data '((0 0 0)(7 6 5)(1 2 3)))) (matrix-from-data '((0 0 0)(28 30 30)(7 16 27))))
   )
     
-  ;; matrix-div
-  (push 'matrix-div *matrix-namespace-unit-test*)
+  ;; /mm
+  (push '/mm *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (matrix-div (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((-1))))
-    (compare-matrix (matrix-div (matrix-from-data '((2)(8))) (matrix-from-data '((2)(4)))) (matrix-from-data '((1)(2))))
-    (compare-matrix (matrix-div (matrix-from-data '((1 4)(6 10))) (matrix-from-data '((1 2)(3 5)))) (matrix-from-data '((1 2)(2 2))))
-    (compare-matrix (matrix-div (matrix-from-data '((10 9 8)(7 6 5)(4 3 2))) (matrix-from-data '((5 3 4)(7 3 5)(1 3 2)))) (matrix-from-data '((2 3 2)(1 2 1)(4 1 1))))
+    (compare-matrix (/mm (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((-1))))
+    (compare-matrix (/mm (matrix-from-data '((2)(8))) (matrix-from-data '((2)(4)))) (matrix-from-data '((1)(2))))
+    (compare-matrix (/mm (matrix-from-data '((1 4)(6 10))) (matrix-from-data '((1 2)(3 5)))) (matrix-from-data '((1 2)(2 2))))
+    (compare-matrix (/mm (matrix-from-data '((10 9 8)(7 6 5)(4 3 2))) (matrix-from-data '((5 3 4)(7 3 5)(1 3 2)))) (matrix-from-data '((2 3 2)(1 2 1)(4 1 1))))
   )
     
-  ;; subtract-row
-  (push 'subtract-row *matrix-namespace-unit-test*)
+  ;; -mr
+  (push '-mr *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (subtract-row (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((2))))
-    (compare-matrix (subtract-row (matrix-from-data '((1)(2))) (matrix-from-data '((1)))) (matrix-from-data '((0)(1))))
-    (compare-matrix (subtract-row (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((2 3)))) (matrix-from-data '((-1 -1)(1 1))))
-    (compare-matrix (subtract-row (matrix-from-data '((1 2 3)(4 5 6)(7 8 9))) (matrix-from-data '((1 5 9)))) (matrix-from-data '((0 -3 -6)(3 0 -3)(6 3 0))))
+    (compare-matrix (-mr (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((2))))
+    (compare-matrix (-mr (matrix-from-data '((1)(2))) (matrix-from-data '((1)))) (matrix-from-data '((0)(1))))
+    (compare-matrix (-mr (matrix-from-data '((1 2)(3 4))) (matrix-from-data '((2 3)))) (matrix-from-data '((-1 -1)(1 1))))
+    (compare-matrix (-mr (matrix-from-data '((1 2 3)(4 5 6)(7 8 9))) (matrix-from-data '((1 5 9)))) (matrix-from-data '((0 -3 -6)(3 0 -3)(6 3 0))))
   )
     
-  ;; subtract-col
-  (push 'subtract-col *matrix-namespace-unit-test*)
+  ;; -mc
+  (push '-mc *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (subtract-col (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((2))))
-    (compare-matrix (subtract-col (matrix-from-data '((1)(2))) (matrix-from-data '((-1)(-1)))) (matrix-from-data '((2)(3))))
-    (compare-matrix (subtract-col (matrix-from-data '((1 2)(2 3))) (matrix-from-data '((1)(2)))) (matrix-from-data '((0 1)(0 1))))
-    (compare-matrix (subtract-col (matrix-from-data '((1 2 3)(2 3 4)(3 4 5))) (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((0 1 2)(0 1 2)(0 1 2))))
+    (compare-matrix (-mc (matrix-from-data '((1))) (matrix-from-data '((-1)))) (matrix-from-data '((2))))
+    (compare-matrix (-mc (matrix-from-data '((1)(2))) (matrix-from-data '((-1)(-1)))) (matrix-from-data '((2)(3))))
+    (compare-matrix (-mc (matrix-from-data '((1 2)(2 3))) (matrix-from-data '((1)(2)))) (matrix-from-data '((0 1)(0 1))))
+    (compare-matrix (-mc (matrix-from-data '((1 2 3)(2 3 4)(3 4 5))) (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((0 1 2)(0 1 2)(0 1 2))))
   )
 
   ;; subtract-val-col
@@ -402,10 +402,10 @@
   ;; power
   (push 'power *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (power 3 (matrix-from-data '((2)))) (matrix-from-data '((8))))
-    (compare-matrix (power 2 (matrix-from-data '((1 2)))) (matrix-from-data '((1 4))))
-    (compare-matrix (power 2 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((1 4)(9 16))))
-    (compare-matrix (power 2 (matrix-from-data '((1 2 3)(4 5 6)(7 8 9)))) (matrix-from-data '((1 4 9)(16 25 36)(49 64 81))))
+    (compare-matrix (power (matrix-from-data '((2)))                   3) (matrix-from-data '((8))))
+    (compare-matrix (power (matrix-from-data '((1 2)))                 2) (matrix-from-data '((1 4))))
+    (compare-matrix (power (matrix-from-data '((1 2)(3 4)))            2) (matrix-from-data '((1 4)(9 16))))
+    (compare-matrix (power (matrix-from-data '((1 2 3)(4 5 6)(7 8 9))) 2) (matrix-from-data '((1 4 9)(16 25 36)(49 64 81))))
   )
 )
 
@@ -597,20 +597,20 @@
 
 (deftest test-matrix ()
   (combine-results
-    ;(test-basics-matrix)
-    ;(test-generate-matrix)
-    ;(test-matrix-modifications)
-    ;(test-shape-matrix)
-    ;(test-transpose-matrix)
+    (test-basics-matrix)
+    (test-generate-matrix)
+    (test-matrix-modifications)
+    (test-shape-matrix)
+    (test-transpose-matrix)
     (test-access-matrix)
-    ;(test-element-wise-operations)
-    ;(test-matrix-multiplication)
-    ;(test-aggregating-functions)
-    ;(test-sort-functions)
-    ;(test-mathematical-functions)
-    ;(test-value-extremes)
-    ;(test-shuffling)
-    ;(test-matrix-to-matrix)
+    (test-element-wise-operations)
+    (test-matrix-multiplication)
+    (test-aggregating-functions)
+    (test-sort-functions)
+    (test-mathematical-functions)
+    (test-value-extremes)
+    (test-shuffling)
+    (test-matrix-to-matrix)
 
     (unit-test-coverage *matrix-namespace* *matrix-namespace-unit-test* "matrix")
   ))
