@@ -255,37 +255,37 @@
     (equal (remove-row-list-matrix 2 '((1 1)(2 2)(3 3))) '((1 1)(2 2)))
   )
 
-  ;; prefix-const-val
-  (push 'prefix-const-val *matrix-namespace-unit-test*)
+  ;; prepend-col-val
+  (push 'prepend-col-val *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (prefix-const-val 0 (matrix-from-data '((1)))) (matrix-from-data '((0 1))))
-    (compare-matrix (prefix-const-val 0 (matrix-from-data '((1 2)))) (matrix-from-data '((0 1 2))))
-    (compare-matrix (prefix-const-val 0 (matrix-from-data '((1)(2)))) (matrix-from-data '((0 1)(0 2))))
-    (compare-matrix (prefix-const-val 0 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((0 1 2)(0 3 4))))
+    (compare-matrix (prepend-col-val (matrix-from-data '((1)))        0) (matrix-from-data '((0 1))))
+    (compare-matrix (prepend-col-val (matrix-from-data '((1 2)))      0) (matrix-from-data '((0 1 2))))
+    (compare-matrix (prepend-col-val (matrix-from-data '((1)(2)))     0) (matrix-from-data '((0 1)(0 2))))
+    (compare-matrix (prepend-col-val (matrix-from-data '((1 2)(3 4))) 0) (matrix-from-data '((0 1 2)(0 3 4))))
   )
 
-  ;; suffix-const-val
-  (push 'suffix-const-val *matrix-namespace-unit-test*)
+  ;; append-col-val
+  (push 'append-col-val *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (suffix-const-val 0 (matrix-from-data '((1)))) (matrix-from-data '((1 0))))
-    (compare-matrix (suffix-const-val 0 (matrix-from-data '((1 2)))) (matrix-from-data '((1 2 0))))
-    (compare-matrix (suffix-const-val 0 (matrix-from-data '((1)(2)))) (matrix-from-data '((1 0)(2 0))))
-    (compare-matrix (suffix-const-val 0 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((1 2 0)(3 4 0))))
+    (compare-matrix (append-col-val (matrix-from-data '((1)))        0) (matrix-from-data '((1 0))))
+    (compare-matrix (append-col-val (matrix-from-data '((1 2)))      0) (matrix-from-data '((1 2 0))))
+    (compare-matrix (append-col-val (matrix-from-data '((1)(2)))     0) (matrix-from-data '((1 0)(2 0))))
+    (compare-matrix (append-col-val (matrix-from-data '((1 2)(3 4))) 0) (matrix-from-data '((1 2 0)(3 4 0))))
   )
 
-  ;; insert-const-val
-  (push 'insert-const-val *matrix-namespace-unit-test*)
+  ;; insert-col-val
+  (push 'insert-col-val *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (insert-const-val 0 0 (matrix-from-data '((1)))) (matrix-from-data '((0 1))))
-    (compare-matrix (insert-const-val 1 0 (matrix-from-data '((1)))) (matrix-from-data '((1 0))))
-    (compare-matrix (insert-const-val 0 0 (matrix-from-data '((1 2)))) (matrix-from-data '((0 1 2))))
-    (compare-matrix (insert-const-val 1 0 (matrix-from-data '((1 2)))) (matrix-from-data '((1 0 2))))
-    (compare-matrix (insert-const-val 2 0 (matrix-from-data '((1 2)))) (matrix-from-data '((1 2 0))))
-    (compare-matrix (insert-const-val 0 0 (matrix-from-data '((1)(2)))) (matrix-from-data '((0 1)(0 2))))
-    (compare-matrix (insert-const-val 1 0 (matrix-from-data '((1)(2)))) (matrix-from-data '((1 0)(2 0))))
-    (compare-matrix (insert-const-val 0 0 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((0 1 2)(0 3 4))))
-    (compare-matrix (insert-const-val 1 0 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((1 0 2)(3 0 4))))
-    (compare-matrix (insert-const-val 2 0 (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((1 2 0)(3 4 0))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1)))        0 :idx 0) (matrix-from-data '((0 1))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1)))        0 :idx 1) (matrix-from-data '((1 0))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1 2)))      0 :idx 0) (matrix-from-data '((0 1 2))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1 2)))      0 :idx 1) (matrix-from-data '((1 0 2))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1 2)))      0 :idx 2) (matrix-from-data '((1 2 0))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1)(2)))     0 :idx 0) (matrix-from-data '((0 1)(0 2))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1)(2)))     0 :idx 1) (matrix-from-data '((1 0)(2 0))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1 2)(3 4))) 0 :idx 0) (matrix-from-data '((0 1 2)(0 3 4))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1 2)(3 4))) 0 :idx 1) (matrix-from-data '((1 0 2)(3 0 4))))
+    (compare-matrix (insert-col-val (matrix-from-data '((1 2)(3 4))) 0 :idx 2) (matrix-from-data '((1 2 0)(3 4 0))))
   )
 )
 

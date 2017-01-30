@@ -31,13 +31,13 @@
 ;;; * (remove-row row-idx mat)
 ;;; * (remove-row-list-matrix row list-mat)
 
-;;; * (prefix-const-val val mat)
-;;; * (suffix-const-val val mat)
-;;; * (insert-const-val idx val mat)
+;;; * (prepend-col-val mat val)
+;;; * (append-col-val val mat)
+;;; * (insert-col-val val mat idx)
 ;;; * (matrix-indices rows cols)
 
-;;; * (sigmoid mat)
-;;; * (sigmoid-prime mat)
+;;; * (sigmoid mat) ; TODO move to different package
+;;; * (sigmoid-prime mat) ; TODO move to different package
 
 ;;; * (shuffle-rows mat)
 ;;; * (shuffle-rows-spec mat idx-list)
@@ -78,7 +78,7 @@
 ;;; * (/mc mat col)
 
 ;;; * (subtract-val-col val col mat)
-;;; * TODO == subtract-val-col (-cv val col mat)
+;;; * TODO == subtract-val-col (-cv mat col-idx val)
 ;;; * (sum-rows mat)
 ;;; * (sum-cols mat)
 ;;; * (sum mat)
@@ -337,19 +337,20 @@
   (remove-nth row list-mat))
 
 ;;; Append constant number at the beginning of each row of given matrix.
-(push 'prefix-const-val *matrix-namespace*)
-(defun prefix-const-val (val mat)
+(push 'prepend-col-val *matrix-namespace*)
+(defun prepend-col-val (mat val)
   (matrix-from-data (mapcar #'(lambda (x) (push val x)) (matrix-data mat))))
 
 ;;; Append constant number at the end of each row of given matrix.
-(push 'suffix-const-val *matrix-namespace*)
-(defun suffix-const-val (val mat)
+(push 'append-col-val *matrix-namespace*)
+(defun append-col-val (mat val)
   (matrix-from-data (mapcar #'(lambda (x) (append x (list val))) (matrix-data mat))))
 
 ;;; Insert constant value (whole column) at given position (column) in matrix.
 ;;; Does not control access out of boundaries.
-(push 'insert-const-val *matrix-namespace*)
-(defun insert-const-val (idx val mat)
+(push 'insert-col-val *matrix-namespace*)
+;(defun insert-col-val (idx val mat)
+(defun insert-col-val (mat val &key idx)
   (let ((end (matrix-cols mat)))
     (matrix-from-data (mapcar #'(lambda (x) (append (subseq x 0 idx) (list val) (subseq x idx end)))
                               (matrix-data mat)))))
@@ -380,6 +381,7 @@
       (/ 1 (+ 1 (exp (- num))))))
 
 ;;; Calculate sigmoid of each value in given matrix.
+;;; TODO move to only mathematical library for common functions?
 (push 'sigmoid *matrix-namespace*)
 (defun sigmoid (mat)
   (matrix-from-data
@@ -387,6 +389,7 @@
             (matrix-data mat))))
 
 ;;; Derivation of sigmoid function.
+;;; TODO move to only mathematical library for common functions?
 (push 'sigmoid-prime *matrix-namespace*)
 (defun sigmoid-prime (mat)
   (let ((s (sigmoid mat)))
