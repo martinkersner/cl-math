@@ -33,7 +33,7 @@ However, this approach of creating matrix with known data values is rather error
 
 If you need to create matrix of specific size (*rows* and *cols*) and fill it with specific *value*, you can use function called *initialize-matrix*.
 ```lisp
-(initialize-matrix rows cols val)
+(initialize-matrix rows col val)
 ```
 
 In order to generate matrix of the same size as some already existing matrix you can use one of two functions *zero-matrix-like* or *empty-matrix-like*. 
@@ -72,8 +72,16 @@ For more complicated value accesses you should use *[]* function.
 ### Data Modification
 Values of matrix can be replaced with *setf* function. To specify concrete rows and columns, *[]* function should be used.
 ```lisp
-(setf m (matrix-from-data '((1 2 3)(4 5 6))))
-(setf ([] m :row 1) '((9 9 9)))
+(setf mat (matrix-from-data '((1 2 3)(4 5 6))))
+(setf ([] mat :row 1) '((9 9 9)))
+```
+
+Following functions let you add new column to matrix *mat*. All new column elements consist of the same value *val*.
+
+```lisp
+(prepend-col-val mat val) ; insert as zeroth column
+(append-col-val mat val)  ; insert as last column
+(insert-col-val mat val :idx col-idx) ; insert column at col-idx position
 ```
 
 ### Matrix Operations
@@ -87,57 +95,57 @@ cl-math provides various matrix operations, from simple ones like matrix transpo
 
 #### Single Matrix Operations
 ```lisp
-(transpose m)
-(det m) ; determinant
-(inv m) ; inverse of matrix
-(sigmoid m) ; element-wise sigmoid operation on matrix
+(transpose mat)
+(det mat) ; determinant
+(inv mat) ; inverse of matrix
+(sigmoid mat) ; element-wise sigmoid operation on matrix
 ```
 
 ```lisp
-(remove-col idx m)
-(remove-row idx m)
+(remove-col idx mat)
+(remove-row idx mat)
 ```
 
 #### Matrix To Matrix Operations
 ```lisp
-(dot m1 m2) ; matrix multiplication
-(+mm m1 m2) ; element-wise matrix addition
-(-mm m1 m2) ; element-wise matrix subtraction
-(*mm m1 m2) ; element-wise matrix multiplication
-(/mm m1 m2) ; element-wise matrix division
+(dot mat1 mat2) ; matrix multiplication
+(+mm mat1 mat2) ; element-wise matrix addition
+(-mm mat1 mat2) ; element-wise matrix subtraction
+(*mm mat1 mat2) ; element-wise matrix multiplication
+(/mm mat1 mat2) ; element-wise matrix division
 ```
 
 Matrix concatenation can be performed using *vstack* and *hstack* functions.
 ```lisp
-(vstack m-left m-right)
-(hstack m-top m-bottom)
+(vstack mat-left mat-right)
+(hstack mat-top mat-bottom)
 ```
 
 #### Matrix And Single Value Operations
 Value *v* represents single number or expression leading to single number.
 
 ```lisp
-(+mv m v) ; add value v to each element of matrix m
-(-mv m v) ; subtract value v from each element of matrix m
-(*mv m v) ; multiply value v with each element of matrix m
-(/mv m v) ; divide value v with each element of matrix m
+(+mv mat val) ; add value v to each element of matrix m
+(-mv mat val) ; subtract value v from each element of matrix m
+(*mv mat val) ; multiply value v with each element of matrix m
+(/mv mat val) ; divide value v with each element of matrix m
 ```
 
 #### Matrix And Row/Column Operations
 ##### Row Operations
 ```lisp
-(+mr m r) ; add row r to each row of matrix m
-(-mr m r) ; subtract row r from each row of matrix m
-(*mr m r) ; multiply row r with each row of matrix m
-(/mr m r) ; divide row r with each row of matrix m
+(+mr mat row) ; add row r to each row of matrix m
+(-mr mat row) ; subtract row r from each row of matrix m
+(*mr mat row) ; multiply row r with each row of matrix m
+(/mr mat row) ; divide row r with each row of matrix m
 ```
 
 ##### Column Operations
 ```lisp
-(+mc m c) ; add column c to each column of matrix m
-(-mc m c) ; subtract column c from each column of matrix m
-(*mc m c) ; multiply column c with each column of matrix m
-(/mc m c) ; divide column c with each column of matrix m
+(+mc mat col) ; add column c to each column of matrix m
+(-mc mat col) ; subtract column c from each column of matrix m
+(*mc mat col) ; multiply column c with each column of matrix m
+(/mc mat col) ; divide column c with each column of matrix m
 ```
 
 #### Row/Column Operations
