@@ -15,8 +15,9 @@
 ;;; * (initialize-matrix rows cols val)
 ;;; * (rand-norm-matrix rows cols)
 ;;; * (matrix-from-data data)
-;;; * (matrix-from-data-peel data)
-;;; * (matrix-data-peel data)
+
+;;; * (matrix-from-data-peel data) TODO try to avoid
+;;; * (matrix-data-peel data) TODO try to avoid
 ;;;
 ;;; SINGLE MATRIX OPERATIONS
 ;;; * (matrix-shape mat)
@@ -25,9 +26,11 @@
 ;;; * (nth-col col mat)
 ;;; * ([] from to mat)
 ;;; * ([][] row col mat)
+
 ;;; * (remove-col col-idx mat)
 ;;; * (remove-row row-idx mat)
 ;;; * (remove-row-list-matrix row list-mat)
+
 ;;; * (prefix-const-val val mat)
 ;;; * (suffix-const-val val mat)
 ;;; * (insert-const-val idx val mat)
@@ -75,6 +78,7 @@
 ;;; * (/mc mat col)
 
 ;;; * (subtract-val-col val col mat)
+;;; * TODO == subtract-val-col (-cv val col mat)
 ;;; * (sum-rows mat)
 ;;; * (sum-cols mat)
 ;;; * (sum mat)
@@ -232,8 +236,8 @@
 
 ;;; Return n-th col from given matrix.
 (push 'nth-col *matrix-namespace*)
-(defmacro nth-col (col mat)
-  `(mapcar #'(lambda (x) (list (nth ,col x))) (matrix-data ,mat)))
+(defmacro nth-col (col-idx mat)
+  `(mapcar #'(lambda (x) (list (nth ,col-idx x))) (matrix-data ,mat)))
 
 (push 'matrix-smart-convert *matrix-namespace*)
 (defun matrix-smart-convert (mat)
@@ -754,26 +758,34 @@
 
     (mapcar #'(lambda (x) (cdr x)) (stable-sort join-vec-idxs #'< :key #'car))))
 
+;;; Auxiliary function for NTH-COL-MAX nd NTH-COL-MIN functions.
+(defmacro nth-col-op (idx mat op)
+  `(funcall ,op
+           (car (transpose-list (nth-col ,idx ,mat)))))
+
 ;;; Find the largest value in specific column of a given matrix.
-;;; TODO merge common function for nth-col-max and nth-col-min
 (push 'nth-col-max *matrix-namespace*)
-(defun nth-col-max (col mat)
-  (maximum (nth col (transpose-list (matrix-data mat)))))
+(defun nth-col-max (col-idx mat)
+  (nth-col-op col-idx mat #'maximum))
 
 ;;; Find the smallest value in specific column of a given matrix.
 (push 'nth-col-min *matrix-namespace*)
-(defun nth-col-min (col mat)
-  (minimum (nth col (transpose-list (matrix-data mat)))))
+(defun nth-col-min (col-idx mat)
+  (nth-col-op col-idx mat #'minimum))
+
+;;; Auxiliary function for NTH-ROW-MAX nd NTH-ROW-MIN functions.
+(defmacro nth-row-op (idx mat op)
+  `(funcall ,op (car (nth-row ,idx ,mat))))
 
 ;;; Find the largest value in specific row of a given matrix.
 (push 'nth-row-max *matrix-namespace*)
-(defun nth-row-max (row mat)
-  (maximum (nth row (matrix-data mat))))
+(defun nth-row-max (row-idx mat)
+  (nth-row-op row-idx mat #'maximum))
 
 ;;; Find the largest value in specific row of a given matrix.
 (push 'nth-row-min *matrix-namespace*)
-(defun nth-row-min (row mat)
-  (minimum (nth row (matrix-data mat))))
+(defun nth-row-min (row-idx mat)
+  (nth-row-op row-idx mat #'minimum))
 
 ;;; Concatenate matrices vertically.
 (push 'vstack *matrix-namespace*)
