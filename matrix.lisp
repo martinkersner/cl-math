@@ -101,12 +101,9 @@
 ;;; * (hstack mat-top mat-bottom)
 
 ;;; TODO 
-;;; smart operations (add vector to all rows or columns of matrix)
 ;;; nth-row nth-col base functions for returning complete matrices
 ;;; unit test for EVERY FUNCTION
-;;; merge similar code from *mv, power, -mv functions together
 ;;; more inspiration from numpy
-;;; generate all functions, keep them in categories
 
 (in-package :cl-math)
 
@@ -540,34 +537,33 @@
       mat_out)))
 
 ;;; ELEMENT-WISE OPERATIONS
-;;; TODO simplify/shorten definition of those functions, too much repetition
 
 ;;; Auxiliary function for ADD, SUBTRACT and MATRIX-MULT.
 (defun element-wise-op (lst_l lst_r op)
   (mapcar #'(lambda (x y) (mapcar op x y)) lst_l lst_r))
 
+(defmacro mm-op (mat-l mat-r op)
+  `(matrix-from-data
+    (element-wise-op (matrix-data ,mat-l) (matrix-data ,mat-r) ,op)))
+
 ;;; Element-wise add for matrices.
 (push '+mm *matrix-namespace*)
 (defun +mm (mat-l mat-r)
-  (matrix-from-data
-    (element-wise-op (matrix-data mat-l) (matrix-data mat-r) #'+)))
+  (mm-op mat-l mat-r #'+))
 
 ;;; Elementwise subtract for matrices.
 (push '-mm *matrix-namespace*)
 (defun -mm (mat-l mat-r)
-  (matrix-from-data
-    (element-wise-op (matrix-data mat-l) (matrix-data mat-r) #'-)))
+  (mm-op mat-l mat-r #'-))
 
 ;;; Elementwise matrix multiplication.
 (push '*mm *matrix-namespace*)
 (defun *mm (mat-l mat-r)
-  (matrix-from-data
-    (element-wise-op (matrix-data mat-l) (matrix-data mat-r) #'*)))
+  (mm-op mat-l mat-r #'*))
 
 (push '/mm *matrix-namespace*)
-(defun /mm (mat_l mat_r)
-  (matrix-from-data
-    (element-wise-op (matrix-data mat_l) (matrix-data mat_r) #'/)))
+(defun /mm (mat-l mat-r)
+  (mm-op mat-l mat-r #'/))
 
 ;;; MATRIX & VALUE OPERATIONS
 
