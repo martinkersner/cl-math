@@ -81,7 +81,9 @@ cl-math provides various matrix operations, from simple ones like matrix transpo
 
 * single matrix operations
 * matrix to matrix operations
-* rows/columns matrix operations
+* matrix and single value operations
+* matrix and row/column operations
+* row/column operations
 
 #### Single Matrix Operations
 ```lisp
@@ -136,4 +138,18 @@ Value *v* represents single number or expression leading to single number.
 (-mc m c) ; subtract column c from each column of matrix m
 (*mc m c) ; multiply column c with each column of matrix m
 (/mc m c) ; divide column c with each column of matrix m
+```
+
+#### Row/Column Operations
+```lisp
+(nth-col-min col-idx mat)
+(nth-col-max col-idx mat)
+
+(nth-row-min row-idx mat)
+(nth-row-max row-idx mat)
+```
+
+```lisp
+(sum-rows mat)
+(sum-cols mat)
 ```
