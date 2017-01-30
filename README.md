@@ -55,8 +55,8 @@ After matrix is created we can request information about it.
 ### Data Access
 Any row or column of matrix can be accesed via
 ```lisp
-(nth-row row-idx mat)
-(nth-col col-idx mat)
+(nth-row mat row-idx)
+(nth-col mat col-idx)
 ```
 
 For more complicated value accesses you should use *[]* function.
@@ -102,8 +102,8 @@ cl-math provides various matrix operations, from simple ones like matrix transpo
 ```
 
 ```lisp
-(remove-col idx mat)
-(remove-row idx mat)
+(remove-col mat col-idx)
+(remove-row mat row-idx)
 ```
 
 #### Matrix To Matrix Operations
@@ -150,11 +150,11 @@ Value *v* represents single number or expression leading to single number.
 
 #### Row/Column Operations
 ```lisp
-(nth-col-min col-idx mat)
-(nth-col-max col-idx mat)
+(nth-col-min mat col-idx)
+(nth-col-max mat col-idx)
 
-(nth-row-min row-idx mat)
-(nth-row-max row-idx mat)
+(nth-row-min mat row-idx)
+(nth-row-max mat row-idx)
 ```
 
 ```lisp
