@@ -88,8 +88,8 @@
 ;;; * (mean-cols mat)
 ;;; * (std-cols mat mean)
 
-;;; * (arg-sort-col-mat col_mat) TODO accept matrices with more than one column
-;;; * TODO (arg-sort-row-mat row_mat)
+;;; * (arg-sort-col-mat col-mat) TODO accept matrices with more than one column
+;;; * TODO (arg-sort-row-mat row-mat)
 
 ;;; * (nth-col-max col mat)
 ;;; * (nth-col-min col mat)
@@ -493,54 +493,54 @@
 
 ;;; Calculate the new values for one cell of result matrix.
 ;;; Auxiliary function for DOT-REC.
-(defun dot-cell-calc (mat_out row_idx col_idx row_vec col_vec)
-  (setf (nth col_idx (nth row_idx (matrix-data mat_out)))
-        (vec-mult (car row_vec)
-                   (car (transpose-list col_vec))))
+(defun dot-cell-calc (mat-out row-idx col-idx row-vec col-vec)
+  (setf (nth col-idx (nth row-idx (matrix-data mat-out)))
+        (vec-mult (car row-vec)
+                   (car (transpose-list col-vec))))
 
-  mat_out)
+  mat-out)
 
 ;;; Auxiliary function for DOT function.
-(defun dot-rec (mat_out mat_l mat_r mat_idxs)
-  (if (eq (car mat_idxs) nil)
-    mat_out
-    (let* ((row_idx (caar mat_idxs))
-           (col_idx (cdar mat_idxs))
-           (row_vec (nth-row row_idx mat_l))
-           (col_vec (nth-col col_idx mat_r)))
+(defun dot-rec (mat-out mat-l mat-r mat-idxs)
+  (if (eq (car mat-idxs) nil)
+    mat-out
+    (let* ((row-idx (caar mat-idxs))
+           (col-idx (cdar mat-idxs))
+           (row-vec (nth-row row-idx mat-l))
+           (col-vec (nth-col col-idx mat-r)))
 
-    (dot-rec (dot-cell-calc mat_out row_idx col_idx row_vec col_vec) mat_l mat_r (cdr mat_idxs)))))
+    (dot-rec (dot-cell-calc mat-out row-idx col-idx row-vec col-vec) mat-l mat-r (cdr mat-idxs)))))
 
 ;;; Control matrix dot product validity.
 ;;; Auxiliary function for DOT function.
-(defun valid-dot-op (mat_l mat_r)
-  (if (not (= (matrix-cols mat_l)
-              (matrix-rows mat_r)))
+(defun valid-dot-op (mat-l mat-r)
+  (if (not (= (matrix-cols mat-l)
+              (matrix-rows mat-r)))
     (error 'matrix-error :text "Matrices cannot be multiplied. Dimensions do not fit.")))
 
 ;;; Matrix multiplication of two matrices.
 ;;; TODO should we slow down performance with VALID-DOT-OP?
 (push 'dot *matrix-namespace*)
-(defun dot (mat_l mat_r)
-  (valid-dot-op mat_l mat_r)
+(defun dot (mat-l mat-r)
+  (valid-dot-op mat-l mat-r)
 
-  (let* ((rows (matrix-rows mat_l))
-         (cols (matrix-cols mat_r))
-         (mat_out (empty-matrix rows cols))
-         (mat_idxs (matrix-indices rows cols)))
+  (let* ((rows (matrix-rows mat-l))
+         (cols (matrix-cols mat-r))
+         (mat-out (empty-matrix rows cols))
+         (mat-idxs (matrix-indices rows cols)))
 
-    (setf mat_out (dot-rec mat_out mat_l mat_r mat_idxs))
+    (setf mat-out (dot-rec mat-out mat-l mat-r mat-idxs))
 
-    (if (and (= (matrix-rows mat_out) 1)
-             (= (matrix-cols mat_out) 1))
-      (caar (matrix-data mat_out))
-      mat_out)))
+    (if (and (= (matrix-rows mat-out) 1)
+             (= (matrix-cols mat-out) 1))
+      (caar (matrix-data mat-out))
+      mat-out)))
 
 ;;; ELEMENT-WISE OPERATIONS
 
 ;;; Auxiliary function for ADD, SUBTRACT and MATRIX-MULT.
-(defun element-wise-op (lst_l lst_r op)
-  (mapcar #'(lambda (x y) (mapcar op x y)) lst_l lst_r))
+(defun element-wise-op (lst-l lst-r op)
+  (mapcar #'(lambda (x y) (mapcar op x y)) lst-l lst-r))
 
 (defmacro mm-op (mat-l mat-r op)
   `(matrix-from-data
@@ -603,12 +603,12 @@
 ;;; MATRIX-ROW/COL OPERATIONS
 
 ;;; Auxiliary function for ELWISE-MAT-ROW-OP.
-(defun elwise-row-row-op (lst_row_l lst_row_r op)
-  (mapcar #'(lambda (x y) (apply op (list x y))) lst_row_l lst_row_r))
+(defun elwise-row-row-op (lst-row-l lst-row-r op)
+  (mapcar #'(lambda (x y) (apply op (list x y))) lst-row-l lst-row-r))
 
 ;;; Auxiliary function for -mr.
-(defun elwise-mat-row-op (lst_mat lst_row op)
-  (mapcar #'(lambda (x) (elwise-row-row-op x lst_row op)) lst_mat))
+(defun elwise-mat-row-op (lst-mat lst-row op)
+  (mapcar #'(lambda (x) (elwise-row-row-op x lst-row op)) lst-mat))
 
 ;;; Auxiliary function for matrix and row operations.
 ;;; Used by +mr, -mr, *mr and /mr.
@@ -670,8 +670,8 @@
 
 ;;; Perform aggregating operation on each row of matrix.
 ;;; Auxiliary function for SUM-ROWS.
-(defun rows-op (mat_lst op)
-  (mapcar #'(lambda (x) (list (apply op x))) mat_lst))
+(defun rows-op (mat-lst op)
+  (mapcar #'(lambda (x) (list (apply op x))) mat-lst))
 
 ;;; Sum values at each row of matrix.
 (push 'sum-rows *matrix-namespace*)
@@ -747,8 +747,8 @@
 
 ;;; Sorts column vector and return indices of sorted vector.
 (push 'arg-sort-col-mat *matrix-namespace*)
-(defun arg-sort-col-mat (col_mat)
-  (let* ((vec (matrix-data col_mat))
+(defun arg-sort-col-mat (col-mat)
+  (let* ((vec (matrix-data col-mat))
          (idxs (iota (length vec)))
          (join-vec-idxs (mapcar #'(lambda (x y) (cons (car x) y)) vec idxs)))
 
