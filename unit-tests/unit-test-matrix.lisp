@@ -142,27 +142,27 @@
   ;; nth-row
   (push 'nth-row *matrix-namespace-unit-test*)
   (check
-    (equal (nth-row 0 (matrix-from-data '((1)))) '((1)))
-    (equal (nth-row 0 (matrix-from-data '((1 2)))) '((1 2)))
-    (equal (nth-row 0 (matrix-from-data '((1)(2)))) '((1)))
-    (equal (nth-row 0 (matrix-from-data '((1 2)(3 4)))) '((1 2)))
-    (equal (nth-row 1 (matrix-from-data '((1 2)(3 4)))) '((3 4)))
-    (equal (nth-row 0 (matrix-from-data '((1 2)(3 4)(5 6)))) '((1 2)))
-    (equal (nth-row 1 (matrix-from-data '((1 2)(3 4)(5 6)))) '((3 4)))
-    (equal (nth-row 2 (matrix-from-data '((1 2)(3 4)(5 6)))) '((5 6)))
+    (compare-matrix (nth-row (matrix-from-data '((1)))             0) (matrix-from-data '((1))))
+    (compare-matrix (nth-row (matrix-from-data '((1 2)))           0) (matrix-from-data '((1 2))))
+    (compare-matrix (nth-row (matrix-from-data '((1)(2)))          0) (matrix-from-data '((1))))
+    (compare-matrix (nth-row (matrix-from-data '((1 2)(3 4)))      0) (matrix-from-data '((1 2))))
+    (compare-matrix (nth-row (matrix-from-data '((1 2)(3 4)))      1) (matrix-from-data '((3 4))))
+    (compare-matrix (nth-row (matrix-from-data '((1 2)(3 4)(5 6))) 0) (matrix-from-data '((1 2))))
+    (compare-matrix (nth-row (matrix-from-data '((1 2)(3 4)(5 6))) 1) (matrix-from-data '((3 4))))
+    (compare-matrix (nth-row (matrix-from-data '((1 2)(3 4)(5 6))) 2) (matrix-from-data '((5 6))))
   )
 
   ;; nth-col
   (push 'nth-col *matrix-namespace-unit-test*)
   (check
-    (equal (nth-col 0 (matrix-from-data '((1)))) '((1)))
-    (equal (nth-col 0 (matrix-from-data '((1 2)))) '((1)))
-    (equal (nth-col 1 (matrix-from-data '((1 2)))) '((2)))
-    (equal (nth-col 0 (matrix-from-data '((1)(2)))) '((1)(2)))
-    (equal (nth-col 0 (matrix-from-data '((1 2)(3 4)))) '((1)(3)))
-    (equal (nth-col 1 (matrix-from-data '((1 2)(3 4)))) '((2)(4)))
-    (equal (nth-col 0 (matrix-from-data '((1 2)(3 4)(5 6)))) '((1)(3)(5)))
-    (equal (nth-col 1 (matrix-from-data '((1 2)(3 4)(5 6)))) '((2)(4)(6)))
+    (compare-matrix (nth-col (matrix-from-data '((1)))             0) (matrix-from-data '((1))))
+    (compare-matrix (nth-col (matrix-from-data '((1 2)))           0) (matrix-from-data '((1))))
+    (compare-matrix (nth-col (matrix-from-data '((1 2)))           1) (matrix-from-data '((2))))
+    (compare-matrix (nth-col (matrix-from-data '((1)(2)))          0) (matrix-from-data '((1)(2))))
+    (compare-matrix (nth-col (matrix-from-data '((1 2)(3 4)))      0) (matrix-from-data '((1)(3))))
+    (compare-matrix (nth-col (matrix-from-data '((1 2)(3 4)))      1) (matrix-from-data '((2)(4))))
+    (compare-matrix (nth-col (matrix-from-data '((1 2)(3 4)(5 6))) 0) (matrix-from-data '((1)(3)(5))))
+    (compare-matrix (nth-col (matrix-from-data '((1 2)(3 4)(5 6))) 1) (matrix-from-data '((2)(4)(6))))
   )
 
   ;; []

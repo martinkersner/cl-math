@@ -22,7 +22,7 @@
 ;;; SINGLE MATRIX OPERATIONS
 ;;; * (matrix-shape mat)
 ;;; * (transpose mat)
-;;; * (nth-row row mat)
+;;; * (nth-row mat row)
 ;;; * (nth-col col mat)
 ;;; * ([] from to mat)
 ;;; * ([][] row col mat)
@@ -226,15 +226,29 @@
                  :cols rows
                  :data (transpose-list data))))
 
+;;; Auxiliary function for NTH-ROW function.
+(push 'nth-row-ret-lst *matrix-namespace*)
+(defun nth-row-ret-lst (mat row-idx)
+  (list (nth row-idx (matrix-data mat))))
+
 ;;; Return n-th row from given matrix.
 (push 'nth-row *matrix-namespace*)
-(defun nth-row (row mat)
-  (list (nth row (matrix-data mat))))
+(defun nth-row (mat row-idx)
+  (make-matrix :rows 1
+               :cols (matrix-cols mat)
+               :data (nth-row-ret-lst mat row-idx)))
 
-;;; Return n-th col from given matrix.
-(push 'nth-col *matrix-namespace*)
-(defmacro nth-col (col-idx mat)
+;;; Auxiliary function for NTH-COL function.
+(push 'nth-col-ret-lst *matrix-namespace*)
+(defmacro nth-col-ret-lst (mat col-idx)
   `(mapcar #'(lambda (x) (list (nth ,col-idx x))) (matrix-data ,mat)))
+
+;;; Return n-th column from given matrix.
+(push 'nth-col *matrix-namespace*)
+(defun nth-col (mat col-idx)
+  (make-matrix :rows (matrix-rows mat)
+               :cols 1
+               :data (nth-col-ret-lst mat col-idx)))
 
 (push 'matrix-smart-convert *matrix-namespace*)
 (defun matrix-smart-convert (mat)
@@ -349,7 +363,6 @@
 ;;; Insert constant value (whole column) at given position (column) in matrix.
 ;;; Does not control access out of boundaries.
 (push 'insert-col-val *matrix-namespace*)
-;(defun insert-col-val (idx val mat)
 (defun insert-col-val (mat val &key idx)
   (let ((end (matrix-cols mat)))
     (matrix-from-data (mapcar #'(lambda (x) (append (subseq x 0 idx) (list val) (subseq x idx end)))
@@ -427,7 +440,7 @@
 (defun det (mat)
   (let ((rows (matrix-rows mat))
         (cols (matrix-cols mat))
-        (first-row (nth 0 (nth-row 0 mat))))
+        (first-row (nth 0 (nth-row-ret-lst mat 0))))
 
     (cond
       ((not (eq rows cols))
@@ -509,8 +522,8 @@
     mat-out
     (let* ((row-idx (caar mat-idxs))
            (col-idx (cdar mat-idxs))
-           (row-vec (nth-row row-idx mat-l))
-           (col-vec (nth-col col-idx mat-r)))
+           (row-vec (nth-row-ret-lst mat-l row-idx))
+           (col-vec (nth-col-ret-lst mat-r col-idx)))
 
     (dot-rec (dot-cell-calc mat-out row-idx col-idx row-vec col-vec) mat-l mat-r (cdr mat-idxs)))))
 
@@ -760,7 +773,7 @@
 ;;; Auxiliary function for NTH-COL-MAX nd NTH-COL-MIN functions.
 (defmacro nth-col-op (idx mat op)
   `(funcall ,op
-           (car (transpose-list (nth-col ,idx ,mat)))))
+           (car (transpose-list (nth-col-ret-lst ,mat ,idx)))))
 
 ;;; Find the largest value in specific column of a given matrix.
 (push 'nth-col-max *matrix-namespace*)
@@ -774,7 +787,7 @@
 
 ;;; Auxiliary function for NTH-ROW-MAX nd NTH-ROW-MIN functions.
 (defmacro nth-row-op (idx mat op)
-  `(funcall ,op (car (nth-row ,idx ,mat))))
+  `(funcall ,op (car (nth-row-ret-lst ,mat ,idx))))
 
 ;;; Find the largest value in specific row of a given matrix.
 (push 'nth-row-max *matrix-namespace*)
