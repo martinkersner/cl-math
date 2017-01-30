@@ -229,21 +229,21 @@
   ;; remove-col
   (push 'remove-col *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (remove-col 0 (matrix-from-data '((1)))) (matrix-from-data '(()))) ; correct?
-    (compare-matrix (remove-col 0 (matrix-from-data '((1 2)))) (matrix-from-data '((2))))
-    (compare-matrix (remove-col 1 (matrix-from-data '((1 2 3)))) (matrix-from-data '((1 3))))
-    (compare-matrix (remove-col 0 (matrix-from-data '((1 2 3)(4 5 6)))) (matrix-from-data '((2 3)(5 6))))
-    (compare-matrix (remove-col 1 (matrix-from-data '((1 2 3)(4 5 6)))) (matrix-from-data '((1 3)(4 6))))
-    (compare-matrix (remove-col 2 (matrix-from-data '((1 2 3)(4 5 6)))) (matrix-from-data '((1 2)(4 5))))
+    (compare-matrix (remove-col (matrix-from-data '((1)))            0) (matrix-from-data '(()))) ; correct?
+    (compare-matrix (remove-col (matrix-from-data '((1 2)))          0) (matrix-from-data '((2))))
+    (compare-matrix (remove-col (matrix-from-data '((1 2 3)))        1) (matrix-from-data '((1 3))))
+    (compare-matrix (remove-col (matrix-from-data '((1 2 3)(4 5 6))) 0) (matrix-from-data '((2 3)(5 6))))
+    (compare-matrix (remove-col (matrix-from-data '((1 2 3)(4 5 6))) 1) (matrix-from-data '((1 3)(4 6))))
+    (compare-matrix (remove-col (matrix-from-data '((1 2 3)(4 5 6))) 2) (matrix-from-data '((1 2)(4 5))))
   )
 
   ;; remove-row
   (push 'remove-row *matrix-namespace-unit-test*)
   (check
     ;(compare-matrix (remove-row 0 (matrix-from-data '((1)))) (matrix-from-data '(()))) ; TODO
-    (compare-matrix (remove-row 0 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((2)(3))))
-    (compare-matrix (remove-row 1 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((1)(3))))
-    (compare-matrix (remove-row 1 (matrix-from-data '((1)(2)(3)))) (matrix-from-data '((1)(3))))
+    (compare-matrix (remove-row (matrix-from-data '((1)(2)(3))) 0) (matrix-from-data '((2)(3))))
+    (compare-matrix (remove-row (matrix-from-data '((1)(2)(3))) 1) (matrix-from-data '((1)(3))))
+    (compare-matrix (remove-row (matrix-from-data '((1)(2)(3))) 1) (matrix-from-data '((1)(3))))
   )
 
   (push 'remove-row-list-matrix *matrix-namespace-unit-test*)

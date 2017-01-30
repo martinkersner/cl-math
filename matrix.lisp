@@ -27,8 +27,8 @@
 ;;; * ([] from to mat)
 ;;; * ([][] row col mat)
 
-;;; * (remove-col col-idx mat)
-;;; * (remove-row row-idx mat)
+;;; * (remove-col mat col-idx)
+;;; * (remove-row mat row-idx)
 ;;; * (remove-row-list-matrix row list-mat)
 
 ;;; * (prepend-col-val mat val)
@@ -335,14 +335,14 @@
 ;;; Remove column from given matrix.
 ;;; Create new matrix.
 (push 'remove-col *matrix-namespace*)
-(defun remove-col (col-idx mat)
+(defun remove-col (mat col-idx)
   (matrix-from-data
     (mapcar #'(lambda (x) (remove-nth col-idx x)) (matrix-data mat))))
 
 ;;; Removes row from given matrix.
 ;;; Create a new matrix.
 (push 'remove-row *matrix-namespace*)
-(defun remove-row (row-idx mat)
+(defun remove-row (mat row-idx)
   (matrix-from-data (remove-nth row-idx (matrix-data mat))))
 
 ;;; Remove row from matrix composed of lists.
@@ -461,8 +461,7 @@
 ;;; Auxiliary function for DET function.
 (defun det-submatrix (col mat)
   (let ((last-row-idx (- (matrix-rows mat) 1)))
-    (remove-col col ([] mat :row (list 1 last-row-idx)))))
-    ;(remove-col col ([] 1 last-row-idx mat))))
+    (remove-col ([] mat :row (list 1 last-row-idx)) col)))
 
 ;;; Compute inverse of a given matrix.
 (push 'inv *matrix-namespace*)
@@ -485,7 +484,7 @@
         (*mv (transpose (matrix-from-data
              (mapcar #'(lambda (row) (progn (setf tmp-row-flag (if (is-odd row) -1 1))
                                             (mapcar #'(lambda (col) (progn (setf tmp-col-flag (if (is-odd col) -1 1))
-                                                                           (apply #'* (list tmp-row-flag tmp-col-flag (det (remove-col col (remove-row row mat)))))))
+                                                                           (apply #'* (list tmp-row-flag tmp-col-flag (det (remove-col (remove-row mat row) col))))))
                                (iota cols)))) (iota rows))))
              (/ 1 (det mat)))))))
 
