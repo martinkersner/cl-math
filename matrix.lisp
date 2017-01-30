@@ -91,10 +91,10 @@
 ;;; * (arg-sort-col-mat col-mat) TODO accept matrices with more than one column
 ;;; * TODO (arg-sort-row-mat row-mat)
 
-;;; * (nth-col-max col mat)
-;;; * (nth-col-min col mat)
-;;; * (nth-row-max row mat)
-;;; * (nth-row-min row mat)
+;;; * (nth-col-max mat col-idx)
+;;; * (nth-col-min mat col-idx)
+;;; * (nth-row-max mat row-idx)
+;;; * (nth-row-min mat row-idx)
 ;;;
 ;;; MATRIX to MATRIX OPERATIONS
 ;;; * (vstack mat-left mat-right)
@@ -770,33 +770,33 @@
     (mapcar #'(lambda (x) (cdr x)) (stable-sort join-vec-idxs #'< :key #'car))))
 
 ;;; Auxiliary function for NTH-COL-MAX nd NTH-COL-MIN functions.
-(defmacro nth-col-op (idx mat op)
+(defmacro nth-col-op (mat idx op)
   `(funcall ,op
            (car (transpose-list (nth-col-ret-lst ,mat ,idx)))))
 
 ;;; Find the largest value in specific column of a given matrix.
 (push 'nth-col-max *matrix-namespace*)
-(defun nth-col-max (col-idx mat)
-  (nth-col-op col-idx mat #'maximum))
+(defun nth-col-max (mat col-idx)
+  (nth-col-op mat col-idx #'maximum))
 
 ;;; Find the smallest value in specific column of a given matrix.
 (push 'nth-col-min *matrix-namespace*)
-(defun nth-col-min (col-idx mat)
-  (nth-col-op col-idx mat #'minimum))
+(defun nth-col-min (mat col-idx)
+  (nth-col-op mat col-idx #'minimum))
 
 ;;; Auxiliary function for NTH-ROW-MAX nd NTH-ROW-MIN functions.
-(defmacro nth-row-op (idx mat op)
+(defmacro nth-row-op (mat idx op)
   `(funcall ,op (car (nth-row-ret-lst ,mat ,idx))))
 
 ;;; Find the largest value in specific row of a given matrix.
 (push 'nth-row-max *matrix-namespace*)
-(defun nth-row-max (row-idx mat)
-  (nth-row-op row-idx mat #'maximum))
+(defun nth-row-max (mat row-idx)
+  (nth-row-op mat row-idx #'maximum))
 
 ;;; Find the largest value in specific row of a given matrix.
 (push 'nth-row-min *matrix-namespace*)
-(defun nth-row-min (row-idx mat)
-  (nth-row-op row-idx mat #'minimum))
+(defun nth-row-min (mat row-idx)
+  (nth-row-op mat row-idx #'minimum))
 
 ;;; Concatenate matrices vertically.
 (push 'vstack *matrix-namespace*)
