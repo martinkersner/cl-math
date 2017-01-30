@@ -68,3 +68,72 @@ For more complicated value accesses you should use *[]* function.
 ([] mat :row 0 :col 0)           ; value in second row and second column
 ([] mat :row '(0 1) :col '(0 1)) ; submatrix of size 2x2 from the first two rows and columns
 ```
+
+### Data Modification
+Values of matrix can be replaced with *setf* function. To specify concrete rows and columns, *[]* function should be used.
+```lisp
+(setf m (matrix-from-data '((1 2 3)(4 5 6))))
+(setf ([] m :row 1) '((9 9 9)))
+```
+
+### Matrix Operations
+cl-math provides various matrix operations, from simple ones like matrix transpose to more complicated ones (e.g. matrix inverse). Matrix operations are divided to several groups
+
+* single matrix operations
+* matrix to matrix operations
+* rows/columns matrix operations
+
+#### Single Matrix Operations
+```lisp
+(transpose m)
+(det m) ; determinant
+(inv m) ; inverse of matrix
+(sigmoid m) ; element-wise sigmoid operation on matrix
+```
+
+```lisp
+(remove-col idx m)
+(remove-row idx m)
+```
+
+#### Matrix To Matrix Operations
+```lisp
+(dot m1 m2) ; matrix multiplication
+(+mm m1 m2) ; element-wise matrix addition
+(-mm m1 m2) ; element-wise matrix subtraction
+(*mm m1 m2) ; element-wise matrix multiplication
+(/mm m1 m2) ; element-wise matrix division
+```
+
+Matrix concatenation can be performed using *vstack* and *hstack* functions.
+```lisp
+(vstack m-left m-right)
+(hstack m-top m-bottom)
+```
+
+#### Matrix And Single Value Operations
+Value *v* represents single number or expression leading to single number.
+
+```lisp
+(+mv m v) ; add value v to each element of matrix m
+(-mv m v) ; subtract value v from each element of matrix m
+(*mv m v) ; multiply value v with each element of matrix m
+(/mv m v) ; divide value v with each element of matrix m
+```
+
+#### Matrix And Row/Column Operations
+##### Row Operations
+```lisp
+(+mr m r) ; add row r to each row of matrix m
+(-mr m r) ; subtract row r from each row of matrix m
+(*mr m r) ; multiply row r with each row of matrix m
+(/mr m r) ; divide row r with each row of matrix m
+```
+
+##### Column Operations
+```lisp
+(+mc m c) ; add column c to each column of matrix m
+(-mc m c) ; subtract column c from each column of matrix m
+(*mc m c) ; multiply column c with each column of matrix m
+(/mc m c) ; divide column c with each column of matrix m
+```
