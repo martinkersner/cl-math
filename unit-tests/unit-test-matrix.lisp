@@ -195,6 +195,22 @@
     (setf ([] tmp-matrix :row '(1 2) :col '(0 2)) '((200 200 200)(200 200 200)))
     (check
       (compare-matrix tmp-matrix (matrix-from-data '((99 1 100 100)(200 200 200 7)(200 200 200 11)))))
+
+    (setf ([] tmp-matrix :row 1) '((300 300 300 300)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((99 1 100 100)(300 300 300 300)(200 200 200 11)))))
+
+    (setf ([] tmp-matrix :col 2) '((400)(400)(400)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((99 1 400 100)(300 300 400 300)(200 200 400 11)))))
+
+    (setf ([] tmp-matrix :col '(1 2)) '((500 500)(500 500)(500 500)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((99 500 500 100)(300 500 500 300)(200 500 500 11)))))
+
+    (setf ([] tmp-matrix :row '(0 1)) '((600 600 600 600)(600 600 600 600)))
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((600 600 600 600)(600 600 600 600)(200 500 500 11)))))
   )
 
   ;; [][]
@@ -581,20 +597,20 @@
 
 (deftest test-matrix ()
   (combine-results
-    (test-basics-matrix)
-    (test-generate-matrix)
-    (test-matrix-modifications)
-    (test-shape-matrix)
-    (test-transpose-matrix)
+    ;(test-basics-matrix)
+    ;(test-generate-matrix)
+    ;(test-matrix-modifications)
+    ;(test-shape-matrix)
+    ;(test-transpose-matrix)
     (test-access-matrix)
-    (test-element-wise-operations)
-    (test-matrix-multiplication)
-    (test-aggregating-functions)
-    (test-sort-functions)
-    (test-mathematical-functions)
-    (test-value-extremes)
-    (test-shuffling)
-    (test-matrix-to-matrix)
+    ;(test-element-wise-operations)
+    ;(test-matrix-multiplication)
+    ;(test-aggregating-functions)
+    ;(test-sort-functions)
+    ;(test-mathematical-functions)
+    ;(test-value-extremes)
+    ;(test-shuffling)
+    ;(test-matrix-to-matrix)
 
     (unit-test-coverage *matrix-namespace* *matrix-namespace-unit-test* "matrix")
   ))
