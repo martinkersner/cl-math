@@ -105,8 +105,6 @@
 ;;; unit test for EVERY FUNCTION
 ;;; more inspiration from numpy
 
-(in-package :cl-math)
-
 (setf *matrix-namespace* '())
 
 (defstruct matrix rows cols data)

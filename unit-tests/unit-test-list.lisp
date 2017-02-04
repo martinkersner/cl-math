@@ -1,8 +1,6 @@
 ;;;; Martin Kersner, m.kersner@gmail.com
 ;;;; 2016/06/04
 
-(in-package :cl-math)
-
 (setf *list-namespace-unit-test* '())
 
 (deftest test-range ()

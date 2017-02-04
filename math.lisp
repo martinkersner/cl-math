@@ -3,8 +3,6 @@
 ;;;; 
 ;;;; Mathematical operations.
 
-(in-package :cl-math)
-
 (setf *math-namespace* '())
 
 (push 'is-even *math-namespace*)

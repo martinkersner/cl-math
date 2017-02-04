@@ -3,8 +3,6 @@
 
 ;;; TODO check error conditions in tests
 
-(in-package :cl-math)
-
 (setf *matrix-namespace-unit-test* '())
 
 (deftest test-basics-matrix ()

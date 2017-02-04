@@ -6,8 +6,6 @@
 ;;;; TODO
 ;;;; unit tests?
 
-(in-package :cl-math)
-
 (defun rand-normal-spec (mean std)
   (+ mean (* std 
              (sqrt (* -2 (log (random 1.0)))) 

@@ -1,8 +1,6 @@
 ;;;; Martin Kersner, m.kersner@gmail.com
 ;;;; 2016/06/03
 
-(in-package :cl-math)
-
 (setf *math-namespace-unit-test* '())
 
 (deftest test-basics ()
