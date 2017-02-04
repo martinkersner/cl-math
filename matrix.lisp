@@ -535,9 +535,11 @@
     (error 'matrix-error :text "Matrices cannot be multiplied. Dimensions do not fit.")))
 
 ;;; Matrix multiplication of two matrices.
+;;; If keep is T no optimizations on matrix size will be performed.
 ;;; TODO should we slow down performance with VALID-DOT-OP?
+;;; TODO unit-test with keep parameter
 (push 'dot *matrix-namespace*)
-(defun dot (mat-l mat-r)
+(defun dot (mat-l mat-r &key (keep nil))
   (valid-dot-op mat-l mat-r)
 
   (let* ((rows (matrix-rows mat-l))
@@ -548,7 +550,8 @@
     (setf mat-out (dot-rec mat-out mat-l mat-r mat-idxs))
 
     (if (and (= (matrix-rows mat-out) 1)
-             (= (matrix-cols mat-out) 1))
+             (= (matrix-cols mat-out) 1)
+             (not keep))
       (caar (matrix-data mat-out))
       mat-out)))
 
