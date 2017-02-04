@@ -288,6 +288,9 @@
     (mat-list row-idx col-from col-to) ([]-prep mat :row row :col col)
 
     (let* ((col-idx (list (first col-idx) (car (last col-idx))))
+           (val (if (numberp val)
+                  (list (list val))
+                  val))
            (mat-tmp (matrix-from-data
                       (setf-[] mat-list val row-idx col-from col-to))))
 

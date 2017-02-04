@@ -209,6 +209,10 @@
     (setf ([] tmp-matrix :row '(0 1)) '((600 600 600 600)(600 600 600 600)))
     (check
       (compare-matrix tmp-matrix (matrix-from-data '((600 600 600 600)(600 600 600 600)(200 500 500 11)))))
+
+    (setf ([] tmp-matrix :row 0 :col 0) 777)
+    (check
+      (compare-matrix tmp-matrix (matrix-from-data '((777 600 600 600)(600 600 600 600)(200 500 500 11)))))
   )
 
   ;; [][]
