@@ -27,6 +27,8 @@
 ;;; * ([] from to mat)
 ;;; * ([][] row col mat)
 
+;;; * (apply-mat mat fun)
+
 ;;; * (remove-col mat col-idx)
 ;;; * (remove-row mat row-idx)
 ;;; * (remove-row-list-matrix row list-mat)
@@ -490,8 +492,8 @@
              (/ 1 (det mat)))))))
 
 ;;; Apply lambda function to each value of matrix.
-(push 'apply-matrix *matrix-namespace*)
-(defmacro apply-matrix (lmbd-fun mat)
+(push 'apply-mat *matrix-namespace*)
+(defmacro apply-mat (mat lmbd-fun)
   `(let ((matrix-lst (matrix-data ,mat)))
 
      (matrix-from-data
@@ -589,7 +591,7 @@
 (defmacro mv-op (mat op val)
   `(matrix-from-data
     (mapcar #'(lambda (row)
-                (mapcar #'(lambda (col) (funcall ,op ,val col))
+                (mapcar #'(lambda (col) (funcall ,op col ,val))
                         row))
             (matrix-data ,mat))))
 

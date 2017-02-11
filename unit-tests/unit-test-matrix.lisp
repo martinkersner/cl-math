@@ -349,9 +349,9 @@
   ;; -mv
   (push '-mv *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (-mv (matrix-from-data '((1)))        0) (matrix-from-data '((-1))))
-    (compare-matrix (-mv (matrix-from-data '((1)(2)))     1) (matrix-from-data '((0)(-1))))
-    (compare-matrix (-mv (matrix-from-data '((1 2)(3 4))) 2) (matrix-from-data '((1 0)(-1 -2))))
+    (compare-matrix (-mv (matrix-from-data '((1)))        0) (matrix-from-data '((1))))
+    (compare-matrix (-mv (matrix-from-data '((1)(2)))     1) (matrix-from-data '((0)(1))))
+    (compare-matrix (-mv (matrix-from-data '((1 2)(3 4))) 2) (matrix-from-data '((-1 0)(1 2))))
   )
     
   ;; *mm
@@ -570,12 +570,12 @@
     (compare-matrix (inv (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((-2 1)(3/2 -1/2))))
   )
 
-  ;; apply-matrix
-  (push 'apply-matrix *matrix-namespace-unit-test*)
+  ;; apply-mat
+  (push 'apply-mat *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (apply-matrix (lambda (x) (+ x 1)) (matrix-from-data '((1)))) (matrix-from-data '((2))))
-    (compare-matrix (apply-matrix (lambda (x) (+ (* x 3) 1)) (matrix-from-data '((1 2)(3 4)))) (matrix-from-data '((4 7)(10 13))))
-    (compare-matrix (apply-matrix (lambda (x) (expt x 2)) (matrix-from-data '((2 2 2)(3 3 3)))) (matrix-from-data '((4 4 4)(9 9 9))))
+    (compare-matrix (apply-mat (matrix-from-data '((1)))            (lambda (x) (+ x 1)))       (matrix-from-data '((2))))
+    (compare-matrix (apply-mat (matrix-from-data '((1 2)(3 4)))     (lambda (x) (+ (* x 3) 1))) (matrix-from-data '((4 7)(10 13))))
+    (compare-matrix (apply-mat (matrix-from-data '((2 2 2)(3 3 3))) (lambda (x) (expt x 2)))    (matrix-from-data '((4 4 4)(9 9 9))))
   )
 )
 
