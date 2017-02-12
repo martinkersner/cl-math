@@ -11,6 +11,8 @@
 ;;; MATRIX CREATION
 ;;; * (empty-matrix rows cols)
 ;;; * (empty-matrix-like mat)
+;;; * (zeros shape)
+;;; * (ones shape)
 ;;; * (zero-matrix-like mat)
 ;;; * (initialize-matrix rows cols val)
 ;;; * (rand-norm-matrix rows cols)
@@ -143,6 +145,27 @@
 (push 'empty-matrix-like *matrix-namespace*)
 (defun empty-matrix-like (mat)
   (empty-matrix (matrix-rows mat) (matrix-cols mat)))
+
+;;; Auxiliary function for zeros and ones functions.
+(push 'create-matrix-from-shape *matrix-namespace*)
+(defun create-matrix-from-shape (shape value)
+  (if (listp shape)
+    (empty-matrix (car shape) (cadr shape) value)
+    (empty-matrix 1           shape        value)))
+
+;;; Create matrix of given shape filled with zeros.
+;;; If shape is a defined as a single number, row matrix will be created.
+(push 'zeros *matrix-namespace*)
+(defun zeros (shape)
+  (let ((value 0))
+    (create-matrix-from-shape shape value)))
+
+;;; Create matrix of given shape filled with ones.
+;;; If shape is a defined as a single number, row matrix will be created.
+(push 'ones *matrix-namespace*)
+(defun ones (shape)
+  (let ((value 1))
+    (create-matrix-from-shape shape value)))
 
 ;;; Create a matrix of the same size as given matrix with 0 values.
 (push 'zero-matrix-like *matrix-namespace*)
