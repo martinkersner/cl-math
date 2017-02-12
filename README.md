@@ -35,11 +35,23 @@ If you need to create matrix of specific size (*rows* and *cols*) and fill it wi
 ```lisp
 (initialize-matrix rows col val)
 ```
-
-In order to generate matrix of the same size as some already existing matrix you can use one of two functions *zero-matrix-like* or *empty-matrix-like*. 
+Because matrices with a single constant value (especially zeros and ones) are often required, functions *empty*, *zeros* and *ones* enable creating such matrices.
 ```lisp
-(zero-matrix-like mat)  ; matrix will be filled with zeros
-(empty-matrix-like mat) ; matrix will be filled with NIL
+(empty (rows cols))
+(empty cols)
+
+(zeros (rows cols)) ; create a matrix of size rows x cols
+(zeros cols) ; create a matrix of size 1 x cols
+
+(ones (rows cols))
+(ones cols)
+```
+
+In order to generate matrix of the same size as some already existing matrix you can use some of functions like *empty-like* *zeros-like* or *ones-like*. 
+```lisp
+(empty-like mat) ; matrix will be filled with NIL
+(zeros-like mat) ; matrix will be filled with zeros
+(ones-like mat) ; matrix will be filled with ones
 ```
 
 ### Matrix Information
