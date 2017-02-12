@@ -78,22 +78,22 @@
     (compare-matrix (matrix-from-data '((1 2 3)(4 5 6)(7 8 9))) (make-matrix :rows 3 :cols 3 :data '((1 2 3)(4 5 6)(7 8 9))))
   )
 
-  ;; empty-matrix-like
-  (push 'empty-matrix-like *matrix-namespace-unit-test*)
+  ;; empty-like
+  (push 'empty-like *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (empty-matrix-like (matrix-from-data '((0))))        (matrix-from-data '((NIL))))
-    (compare-matrix (empty-matrix-like (matrix-from-data '((0)(1))))     (matrix-from-data '((NIL)(NIL))))
-    (compare-matrix (empty-matrix-like (matrix-from-data '((0 1))))      (matrix-from-data '((NIL NIL))))
-    (compare-matrix (empty-matrix-like (matrix-from-data '((0 1)(2 3)))) (matrix-from-data '((NIL NIL)(NIL NIL))))
+    (compare (empty-like (matrix-from-data '((0))))        (matrix-from-data '((NIL))))
+    (compare (empty-like (matrix-from-data '((0)(1))))     (matrix-from-data '((NIL)(NIL))))
+    (compare (empty-like (matrix-from-data '((0 1))))      (matrix-from-data '((NIL NIL))))
+    (compare (empty-like (matrix-from-data '((0 1)(2 3)))) (matrix-from-data '((NIL NIL)(NIL NIL))))
   )
 
-  ;; zero-matrix-like
-  (push 'zero-matrix-like *matrix-namespace-unit-test*)
+  ;; zeros-like
+  (push 'zeros-like *matrix-namespace-unit-test*)
   (check
-    (compare-matrix (zero-matrix-like (matrix-from-data '((0))))        (matrix-from-data '((0))))
-    (compare-matrix (zero-matrix-like (matrix-from-data '((0)(1))))     (matrix-from-data '((0)(0))))
-    (compare-matrix (zero-matrix-like (matrix-from-data '((0 1))))      (matrix-from-data '((0 0))))
-    (compare-matrix (zero-matrix-like (matrix-from-data '((0 1)(2 3)))) (matrix-from-data '((0 0)(0 0))))
+    (compare-matrix (zeros-like (matrix-from-data '((0))))        (matrix-from-data '((0))))
+    (compare-matrix (zeros-like (matrix-from-data '((0)(1))))     (matrix-from-data '((0)(0))))
+    (compare-matrix (zeros-like (matrix-from-data '((0 1))))      (matrix-from-data '((0 0))))
+    (compare-matrix (zeros-like (matrix-from-data '((0 1)(2 3)))) (matrix-from-data '((0 0)(0 0))))
   )
 )
 
