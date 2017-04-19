@@ -81,10 +81,10 @@
   ;; empty-like
   (push 'empty-like *matrix-namespace-unit-test*)
   (check
-    (compare (empty-like (matrix-from-data '((0))))        (matrix-from-data '((NIL))))
-    (compare (empty-like (matrix-from-data '((0)(1))))     (matrix-from-data '((NIL)(NIL))))
-    (compare (empty-like (matrix-from-data '((0 1))))      (matrix-from-data '((NIL NIL))))
-    (compare (empty-like (matrix-from-data '((0 1)(2 3)))) (matrix-from-data '((NIL NIL)(NIL NIL))))
+    (compare-matrix (empty-like (matrix-from-data '((0))))        (matrix-from-data '((NIL))))
+    (compare-matrix (empty-like (matrix-from-data '((0)(1))))     (matrix-from-data '((NIL)(NIL))))
+    (compare-matrix (empty-like (matrix-from-data '((0 1))))      (matrix-from-data '((NIL NIL))))
+    (compare-matrix (empty-like (matrix-from-data '((0 1)(2 3)))) (matrix-from-data '((NIL NIL)(NIL NIL))))
   )
 
   ;; zeros-like
