@@ -460,7 +460,9 @@
 (push 'sigmoid-prime *matrix-namespace*)
 (defun sigmoid-prime (mat)
   (let ((s (sigmoid mat)))
-    (*mm s (-mv s 1))))
+    (*mm
+      s
+      (-mm (ones-like s) s))))
 
 ;;; Randomly shuffle rows of matrix.
 ;;; TODO unit test?
